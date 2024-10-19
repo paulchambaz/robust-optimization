@@ -16,6 +16,7 @@
         pythonPackages = python.pkgs;
         devPkgs = with pkgs; [
           glpk
+          python
         ];
         pythonPkgs = with pythonPackages; [
           pulp
@@ -25,7 +26,7 @@
       in {
         app.default = {
         };
-        devShell.default = pkgs.mkShell {
+        devShells.default = pkgs.mkShell {
           buildInputs = devPkgs ++ pythonPkgs;
         };
       }
