@@ -1,2 +1,2 @@
 run:
-  python ./tme/exo35.py
+  python ./tme/exo36.py
