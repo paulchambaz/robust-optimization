@@ -30,7 +30,7 @@ m += pulp.lpSum(1 * y[0] + 3 * y[1]) <= 7, "Constraint0"
 m += pulp.lpSum(2 * y[0] + 1 * y[1]) <= 3, "Constraint1"
 m += pulp.lpSum(3 * y[0] + 1 * y[1]) <= 4, "Constraint2"
 
-m.solve(pulp.GLPK())
+m.solve(pulp.GUROBI_CMD())
 
 print("\nSolution optimale:")
 for i, val in enumerate(y):

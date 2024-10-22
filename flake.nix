@@ -1,7 +1,7 @@
 {
   description = "Mogpl dev environment";
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
   };
   outputs = {
@@ -11,11 +11,17 @@
   }:
     flake-utils.lib.eachDefaultSystem (
       system: let
-        pkgs = nixpkgs.legacyPackages.${system};
+        pkgs = import nixpkgs {
+          inherit system;
+          config = {
+            allowUnfree = true;
+          };
+        };
         python = pkgs.python311;
         pythonPackages = python.pkgs;
         devPkgs = with pkgs; [
           glpk
+          gurobi
           python
         ];
         pythonPkgs = with pythonPackages; [
@@ -28,6 +34,9 @@
         };
         devShells.default = pkgs.mkShell {
           buildInputs = devPkgs ++ pythonPkgs;
+          shellHook = ''
+            export GRB_LICENSE_FILE="./gurobi.lic"
+          '';
         };
       }
     );

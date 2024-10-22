@@ -65,7 +65,8 @@ prob += cells[2][2] == 4, "Given4"
 prob += cells[1][2] == 2, "Given5"
 
 # Solve the problem
-prob.solve(pulp.GLPK())
+# prob.solve(pulp.GLPK())
+prob.solve(pulp.GUROBI_CMD())
 
 # Print the solution
 print("\nSolution:")

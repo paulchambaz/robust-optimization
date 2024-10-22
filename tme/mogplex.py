@@ -31,7 +31,7 @@ for i in lignes:
     m += lpSum(a[i][j] * x[j] for j in colonnes) <= b[i], f"Constraint{i}"
 
 # Solve the problem using GLPK
-m.solve(GLPK())
+m.solve(GUROBI_CMD())
 
 # Print results
 print("\nSolution optimale:")

@@ -15,7 +15,7 @@ prob += pulp.lpSum(x + y) <= 10, "Constraint1"
 prob += pulp.lpSum(x - y + M * z) >= epsilon, "DiffLow"
 prob += pulp.lpSum(y - x + M * (1 - z)) >= epsilon, "DiffHigh"
 
-prob.solve(pulp.GLPK())
+prob.solve(pulp.GUROBI_CMD())
 
 # Print results
 print(f"Status: {pulp.LpStatus[prob.status]}")

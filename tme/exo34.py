@@ -55,7 +55,7 @@ def linear_approx(xi, yi):
     for i in lines:
         m += pulp.lpSum(a[i][j] * x[j] for j in columns) <= b[i], f"Contraint{i}"
 
-    m.solve(pulp.GLPK())
+    m.solve(pulp.GUROBI_CMD())
 
     x1 = x[0].value()
     x2 = x[1].value()
