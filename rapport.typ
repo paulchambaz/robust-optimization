@@ -1,4 +1,5 @@
 #import "@preview/cetz:0.3.0"
+// #import "@preview/cetz-plot:0.1.0"
 
 // #set text(size: 11pt, font: "New Computer Modern")
 #set text(size: 11pt)
@@ -12,7 +13,7 @@
       stack(dir: ltr,
         [ Modélisation, optimisation, graphes, programmation linéaire ],
         h(1fr),
-        [ Paul Chambaz & Simon Groc ],
+        [ Paul Chambaz & Zélie van der Meer ],
       ),
       v(.1cm),
       line(length: 100%, stroke: .4pt)
@@ -27,7 +28,7 @@
           "1",
         )],
         h(1fr),
-        [ Master #smallcaps[Ai2d] M1 -- 2024 ],
+        [ Master #smallcaps[Ai2d] & #smallcaps[Sar] M1 -- 2024 ],
     )
   ],
 )
@@ -67,6 +68,11 @@
 
 === 1.1
 #lorem(120)
+
+#figure(caption: [ Test Benchmark ])[
+  #cetz.canvas({
+  })
+]
 
 === 1.2
 #lorem(100)
