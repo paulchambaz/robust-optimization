@@ -1,5 +1,6 @@
-#import "@preview/cetz:0.3.0"
-// #import "@preview/cetz-plot:0.1.0"
+#import "@preview/cetz:0.3.1": canvas, draw
+#import "@preview/cetz-plot:0.1.0": plot, chart
+#import "@preview/statastic:1.0.0"
 
 // #set text(size: 11pt, font: "New Computer Modern")
 #set text(size: 11pt)
@@ -24,9 +25,9 @@
     #stack(dir: ltr,
         [ Sorbonne Université ],
         h(1fr),
-        [#counter(page).display(
-          "1",
-        )],
+        [ #context {
+            counter(page).display("1")
+        } ],
         h(1fr),
         [ Master #smallcaps[Ai2d] & #smallcaps[Sar] M1 -- 2024 ],
     )
@@ -53,6 +54,62 @@
   it.body + [.],
 )
 
+#let plot-performance(
+  data,
+  caption: none,
+  x-label: none,
+  y-label: none,
+  log-scale: false,
+  show-quartiles: false,
+  show-line: false,
+) = {
+  figure(
+    caption: caption,
+    canvas({
+      let x_values = data.map(((x, _)) => x)
+      let y_values = data.map(((_, y)) => y)
+
+      let x_min = calc.min(..x_values)
+      let x_max = calc.max(..x_values)
+      let y_min = calc.min(..y_values)
+      let y_max = calc.max(..y_values)
+
+      let f1(x) = calc.sin(x)
+
+      plot.plot(
+        size: (5, 5),
+        x-min: x_min,
+        x-max: x_max,
+        y-min: y_min,
+        y-max: y_max,
+        {
+          plot.add(
+            f1,
+            domain: (x_min, x_max),
+            style: (stroke: black)
+          )
+        }
+      )
+    })
+  )
+}
+
+// #let sample-data = parse-performance-data("your_data.csv")
+#let sample-data = (
+  (10, 0.001),
+  (10, 0.0012),
+  (10, 0.0009),
+  (100, 0.1),
+  (100, 0.11),
+  (100, 0.09),
+  (1000, 10),
+  (1000, 11),
+  (1000, 9),
+  (10000, 1000),
+  (10000, 1100),
+  (10000, 900)
+)
+
 #align(center)[
   #v(.5cm)
   #rect(inset: .4cm, stroke: .4pt)[
@@ -69,10 +126,15 @@
 === 1.1
 #lorem(120)
 
-#figure(caption: [ Test Benchmark ])[
-  #cetz.canvas({
-  })
-]
+#plot-performance(
+  sample-data,
+  caption: [ Performance Analysis ],
+  x-label: [ Instance size ],
+  y-label: [ Execution time (ms) ],
+  log-scale: false,
+  show-quartiles: false,
+  show-line: false,
+)
 
 === 1.2
 #lorem(100)
