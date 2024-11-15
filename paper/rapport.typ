@@ -64,22 +64,23 @@ L'implémentation de ce programme linéaire a été réalisée en Python à l'ai
 
 La solution optimale $x^*$ est un vecteur binaire où seuls les projets 2, 3, 4, 7, 8 et 9 sont sélectionnés, ce qui s'écrit :
 
-$ x^* = (0, 1, 1, 1, 0, 0, 1, 1, 1, 0) $
-
-Cette solution présente les caractéristiques suivantes :
-
-- Coût total: $85K €$, ce qui respecte bien la contrainte budgétaire de $100K €$
-- Vecteur image : $z(x^*) = (66, 66)$
-- Valeur optimale : $g(x^*) = 66$
+#figure[
+  Vecteur $x^* : (0, 1, 1, 1, 0, 0, 1, 1, 1, 0)$ \
+  Coût total : $85K €$ \
+  Valeur image : $z(x^*) = (66, 66)$ \
+  Valeur optimale : $g(x^*) = 66$
+]
 
 Il est intéressant de noter que cette solution atteint exactement la même utilité dans les deux scénarios ($z_1(x^*) = z_2(x^*) = 66$), ce qui suggère un bon équilibre entre les deux scénarios.
 
 Il est intéressant de noter que l'utilisation d'autres solveurs nous conduit à une solution alternative :
 
-- Vecteur $x^* : [0, 0, 1, 1, 1, 1, 1, 1, 0, 0]$
-- Coût total : $100K €$
-- Valeur image : $z(x^*) = (66, 66)$
-- Valeur optimale : $g(x^*) = 66$
+#figure[
+  Vecteur $x^* : (0, 0, 1, 1, 1, 1, 1, 1, 0, 0)$ \
+  Coût total : $100K €$ \
+  Valeur image : $z(x^*) = (66, 66)$ \
+  Valeur optimale : $g(x^*) = 66$
+]
 
 Bien que ces deux solutions soient équivalentes du point de vue de notre critère maximin, atteignant la même valeur optimale $g(x^*) = 66$, elles diffèrent par leur efficience économique. En effet, la seconde solution mobilise l'intégralité du budget pour atteindre le même niveau d'utilité que la première qui n'en utilise que 85%. La minimisation des coûts n'étant pas un objectif de notre programme linéaire, ces deux solutions sont mathématiquement équivalentes, bien que la première apparaisse plus avantageuse d'un point de vue pratique.
 
