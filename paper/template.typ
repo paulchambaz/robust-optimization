@@ -48,6 +48,7 @@
     #set align(center)
     #set text(13pt, weight: 500)
     #smallcaps(it.body)
+    #v(0.2cm)
   ]
 
   show heading.where(

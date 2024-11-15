@@ -21,9 +21,9 @@
 == Partie 1
 
 === 1.1
-Cette première partie traite de la linéarisation du critère maximin dans le contexte de la sélection de projets sous incertitude. le critère maximin, noté $g(x) = min_(i=1,...,n) z_i(x)$, cherche la solution dont l'évaluation dans le pire scénario est la meilleure possible.
+On traite la linéarisation du critère maximun dans le contexte de la sélection de projets sous incertitude. On cherche la solution dont l'évaluation dans le pire scénario est la meilleure possible.
 
-Considérons un ensemble de $n = 10$ projets, caractérisés comme suit par des coût ($c$) et deux variables d'utilités ($s^1$ et $s^2$) :
+Considérons l'ensemble de $n = 10$ projets, caractérisés comme suit par des coût ($c$) et deux variables d'utilités ($s^1$ et $s^2$) :
 $
 c = (60, 10, 15, 20, 25, 20, 5, 15, 20, 60) \
 s^1 = (70, 18, 16, 14, 12, 10, 8, 6, 4, 2) \
@@ -76,10 +76,10 @@ Il est intéressant de noter que cette solution atteint exactement la même util
 
 Il est intéressant de noter que l'utilisation d'autres solveurs nous conduit à une solution alternative :
 
-- Vector $x^*: [0, 0, 1, 1, 1, 1, 1, 1, 0, 0]$
-- Total cost: $100K €$
-- Vector $z(x^*) = (66, 66)$
-- Optimal value $g(x^*) = 66$
+- Vecteur $x^* : [0, 0, 1, 1, 1, 1, 1, 1, 0, 0]$
+- Coût total : $100K €$
+- Valeur image : $z(x^*) = (66, 66)$
+- Valeur optimale : $g(x^*) = 66$
 
 Bien que ces deux solutions soient équivalentes du point de vue de notre critère maximin, atteignant la même valeur optimale $g(x^*) = 66$, elles diffèrent par leur efficience économique. En effet, la seconde solution mobilise l'intégralité du budget pour atteindre le même niveau d'utilité que la première qui n'en utilise que 85%. La minimisation des coûts n'étant pas un objectif de notre programme linéaire, ces deux solutions sont mathématiquement équivalentes, bien que la première apparaisse plus avantageuse d'un point de vue pratique.
 
