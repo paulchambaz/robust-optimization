@@ -68,9 +68,9 @@ $ x^* = (0, 1, 1, 1, 0, 0, 1, 1, 1, 0) $
 
 Cette solution présente les caractéristiques suivantes :
 
-- Coût total: $85K €$, ce qui respecte bien la contrainte budgétaire de $100K €$.
-- Vecteur image : $z(x^*) = (66, 66)$.
-- Valeur optimale : $(g(x^*) = 66$.
+- Coût total: $85K €$, ce qui respecte bien la contrainte budgétaire de $100K €$
+- Vecteur image : $z(x^*) = (66, 66)$
+- Valeur optimale : $g(x^*) = 66$
 
 Il est intéressant de noter que cette solution atteint exactement la même utilité dans les deux scénarios ($z_1(x^*) = z_2(x^*) = 66$), ce qui suggère un bon équilibre entre les deux scénarios.
 
