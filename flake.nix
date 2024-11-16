@@ -28,6 +28,7 @@
           pulp
           numpy
           matplotlib
+          gurobipy
         ];
       in {
         app.default = {
