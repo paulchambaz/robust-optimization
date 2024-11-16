@@ -1,5 +1,6 @@
 #import "template.typ": *
 #import "@preview/cetz:0.3.1": canvas, draw
+#import "@preview/statastic:1.0.0": *
 
 #show: report.with(
   title: [ Projet #smallcaps[Mogpl] \ Optimisation robuste dans l'incertain total ],
@@ -194,19 +195,327 @@ On s'intéresse maintenant à l'évolution des temps de résolution des deux cri
 
 L'implémentation de ce programme linéaire a été réalisée en Python à l'aide de la librairie `pulp` et du solveur `gurobi` (voir le fichier `src/q14.py`). La résolution nous fournit les résultats suivants.
 
-#figure(caption: [ Temps de résolution par nombre de projets ])[
-  #image("data/figure_1.png")
-]
+#let plot-colors = (
+  rgb(31, 119, 180),   // blue
+  rgb(255, 127, 14),   // orange
+  rgb(44, 160, 44),    // green
+  rgb(214, 39, 40),    // red
+  rgb(148, 103, 189),  // purple
+  rgb(140, 86, 75),    // brown
+  rgb(227, 119, 194),  // pink
+  rgb(127, 127, 127),  // gray
+  rgb(188, 189, 34),   // yellow-green
+  rgb(23, 190, 207)    // cyan
+)
+#let to-screen(value, min-val, max-val) = {
+  if min-val == max-val { return 0 }
+  (value - min-val) / (max-val - min-val)
+}
 
-#figure(caption: [ Temps de résolution par nombre de scénarios ])[
-  #image("data/figure_2.png")
-]
+#let get-nice-steps(min-val, max-val, target-steps: 5) = {
+  let range = max-val - min-val
+  let rough-step = range / target-steps
+  let magnitude = calc.pow(10, calc.floor(calc.log(rough-step) / calc.log(10)))
+  let possible-steps = (1.0, 2.0, 2.5, 5.0, 10.0)
+  
+  // Find the step size that gives the most appropriate number of intervals
+  let normalized-step = rough-step / magnitude
+  let chosen-step = possible-steps.find(step => step >= normalized-step)
+  let step-size = chosen-step * magnitude
+  
+  // Calculate start and end that are multiples of step-size
+  let start = calc.ceil(min-val / step-size) * step-size
+  let end = calc.floor(max-val / step-size) * step-size
+  
+  return range(start, end + step-size/2, step: step-size)
+}
+
+#let plot-q14(data, by: "") = {
+  canvas(length: 5cm, {
+    import draw: *
+    set-style(
+      mark: (fill: black),
+      stroke: 0.5pt,
+    )
+    
+    let y-values = data.map(el => el.at("value"))
+    let y-min = calc.min(..y-values)
+    let y-max = calc.max(..y-values)
+    
+    if by == "scenario" {
+      let scenarios = data.map(el => el.at("scenario"))
+                         .dedup()
+                         .sorted()
+      let projects = data.map(el => el.at("project"))
+                        .dedup()
+                        .sorted()
+      
+      let x-min = scenarios.first()
+      let x-max = scenarios.last()
+      
+      // Draw axes first
+      line((0, 0), (1.1, 0), mark: (end: "stealth"))
+      line((0, 0), (0, 1.1), mark: (end: "stealth"))
+      
+      // Draw x-axis grid lines (every 10 scenarios)
+      for x in (10, 20, 30, 40, 50) {
+        if x <= x-max {
+          let x-pos = to-screen(x, x-min, x-max)
+          // Vertical grid line
+          line(
+            (x-pos, 0),
+            (x-pos, 1),
+            stroke: gray + 0.5pt
+          )
+          // X-axis tick and label
+          line((x-pos, 0), (x-pos, -0.02), stroke: black)
+          content(
+            (x-pos, -0.05),
+            text(size: 0.5em)[#x],
+            anchor: "north"
+          )
+        }
+      }
+      
+      // Draw y-axis grid lines
+      let y-step = 0.1  // Fixed step of 0.1
+      let y-start = calc.ceil(y-min / y-step) * y-step
+      let y-end = calc.floor(y-max / y-step) * y-step
+      let current-y = y-start
+      
+      while current-y <= y-end {
+        let y-pos = to-screen(current-y, y-min, y-max)
+        // Horizontal grid line
+        line(
+          (0, y-pos),
+          (1, y-pos),
+          stroke: gray + 0.5pt
+        )
+        // Y-axis tick and label
+        line((0, y-pos), (-0.02, y-pos), stroke: black)
+        content(
+          (-0.03, y-pos),
+          text(size: 0.5em)[#calc.round(current-y, digits: 2)],
+          anchor: "east"
+        )
+        current-y = current-y + y-step
+      }
+      
+      // First pass: Plot all points
+      for project in projects {
+        let color-idx = calc.floor((project - 10) / 5)
+        let color = plot-colors.at(color-idx)
+        
+        let project-data = data.filter(el => el.at("project") == project)
+        
+        // Plot individual points with low opacity
+        for point in project-data {
+          let x = to-screen(point.at("scenario"), x-min, x-max)
+          let y = to-screen(point.at("value"), y-min, y-max)
+          circle(
+            (x, y),
+            radius: 0.005,
+            stroke: none,
+            fill: color.opacify(-90%)
+          )
+        }
+      }
+      
+      // Second pass: Plot medians and lines
+      for project in projects {
+        let color-idx = calc.floor((project - 10) / 5)
+        let color = plot-colors.at(color-idx)
+        
+        let project-data = data.filter(el => el.at("project") == project)
+        
+        // Calculate medians
+        let medians = scenarios.map(s => {
+          let values = project-data
+            .filter(el => el.at("scenario") == s)
+            .map(el => el.at("value"))
+          if values.len() > 0 {
+            (x: s, y: arrayMedian(values))
+          }
+        }).filter(el => el != none)
+        
+        // Plot median points
+        for point in medians {
+          let x = to-screen(point.x, x-min, x-max)
+          let y = to-screen(point.y, y-min, y-max)
+          circle((x, y), radius: 0.01, stroke: none, fill: color)
+        }
+        
+        // Connect median points with lines
+        if medians.len() > 1 {
+          for i in range(1, medians.len()) {
+            let curr = medians.at(i)
+            let prev = medians.at(i - 1)
+            let curr-x = to-screen(curr.x, x-min, x-max)
+            let curr-y = to-screen(curr.y, y-min, y-max)
+            let prev-x = to-screen(prev.x, x-min, x-max)
+            let prev-y = to-screen(prev.y, y-min, y-max)
+            line((prev-x, prev-y), (curr-x, curr-y), stroke: color)
+          }
+        }
+      }
+    } else {
+      let scenarios = data.map(el => el.at("scenario"))
+                         .dedup()
+                         .sorted()
+      let projects = data.map(el => el.at("project"))
+                        .dedup()
+                        .sorted()
+      
+      let x-min = scenarios.first()
+      let x-max = scenarios.last()
+      
+      // Draw axes first
+      line((0, 0), (1.1, 0), mark: (end: "stealth"))
+      line((0, 0), (0, 1.1), mark: (end: "stealth"))
+      
+      // Draw x-axis grid lines (every 10 projects)
+      for x in (10, 20, 30, 40, 50) {
+        if x <= x-max {
+          let x-pos = to-screen(x, x-min, x-max)
+          // Vertical grid line
+          line(
+            (x-pos, 0),
+            (x-pos, 1),
+            stroke: gray + 0.5pt
+          )
+          // X-axis tick and label
+          line((x-pos, 0), (x-pos, -0.02), stroke: black)
+          content(
+            (x-pos, -0.05),
+            text(size: 0.5em)[#x],
+            anchor: "north"
+          )
+        }
+      }
+      
+      // Draw y-axis grid lines
+      let y-step = 0.1  // Fixed step of 0.1
+      let y-start = calc.ceil(y-min / y-step) * y-step
+      let y-end = calc.floor(y-max / y-step) * y-step
+      let current-y = y-start
+      
+      while current-y <= y-end {
+        let y-pos = to-screen(current-y, y-min, y-max)
+        // Horizontal grid line
+        line(
+          (0, y-pos),
+          (1, y-pos),
+          stroke: gray + 0.5pt
+        )
+        // Y-axis tick and label
+        line((0, y-pos), (-0.02, y-pos), stroke: black)
+        content(
+          (-0.03, y-pos),
+          text(size: 0.5em)[#calc.round(current-y, digits: 2)],
+          anchor: "east"
+        )
+        current-y = current-y + y-step
+      }
+      
+      // First pass: Plot all points
+      for scenario in scenarios {
+        let color-idx = calc.floor((scenario - 5) / 5)
+        let color = plot-colors.at(color-idx)
+        
+        let scenario-data = data.filter(el => el.at("scenario") == scenario)
+        
+        // Plot individual points with low opacity
+        for point in scenario-data {
+          let x = to-screen(point.at("project"), x-min, x-max)
+          let y = to-screen(point.at("value"), y-min, y-max)
+          circle(
+            (x, y),
+            radius: 0.005,
+            stroke: none,
+            fill: color.opacify(-90%)
+          )
+        }
+      }
+      
+      // Second pass: Plot medians and lines
+      for scenario in scenarios {
+        let color-idx = calc.floor((scenario - 5) / 5)
+        let color = plot-colors.at(color-idx)
+        
+        let scenario-data = data.filter(el => el.at("scenario") == scenario)
+        
+        // Calculate medians
+        let medians = projects.map(s => {
+          let values = scenario-data
+            .filter(el => el.at("project") == s)
+            .map(el => el.at("value"))
+          if values.len() > 0 {
+            (x: s, y: arrayMedian(values))
+          }
+        }).filter(el => el != none)
+        
+        // Plot median points
+        for point in medians {
+          let x = to-screen(point.x, x-min, x-max)
+          let y = to-screen(point.y, y-min, y-max)
+          circle((x, y), radius: 0.01, stroke: none, fill: color)
+        }
+        
+        // Connect median points with lines
+        if medians.len() > 1 {
+          for i in range(1, medians.len()) {
+            let curr = medians.at(i)
+            let prev = medians.at(i - 1)
+            let curr-x = to-screen(curr.x, x-min, x-max)
+            let curr-y = to-screen(curr.y, y-min, y-max)
+            let prev-x = to-screen(prev.x, x-min, x-max)
+            let prev-y = to-screen(prev.y, y-min, y-max)
+            line((prev-x, prev-y), (curr-x, curr-y), stroke: color)
+          }
+        }
+      }
+    }
+  })
+}
+
+
+#let data-q14 = csv("data/q14.csv", row-type: dictionary)
+#let data-maxmin = data-q14.map(element => {
+  (
+    scenario: int(element.at("n_scenarios")),
+    project: int(element.at("n_projects")),
+    value: float(element.at("maxmin_time")),
+  )
+})
+#let data-minmax-regret = data-q14.map(element => {
+  (
+    scenario: int(element.at("n_scenarios")),
+    project: int(element.at("n_projects")),
+    value: float(element.at("minmax_regret_time")),
+  )
+})
 
 L'analyse des temps de résolution révèle un comportement différent entre l'augmentation du nombre de scénarios et celle du nombre de projets. la croissance linéaire observée avec le nombre de scénarios s'explique par la structure même des programmes linéaires : chaque nouveau scénario ajoute simplement un nouvel ensemble de contraintes linéaires au problème, sans modifier la nature combinatoire du problème sous-jacent.
+
+#figure(caption: [ Maxmin par scenarios ])[
+  #plot-q14(data-maxmin, by: "scenario")
+]
+
+#figure(caption: [ Minmax regret par scenarios ])[
+  #plot-q14(data-minmax-regret, by: "scenario")
+]
 
 En revance, l'ajout de nouveaux projets impacte directement la complexité combinatoire du problème. Le problème de sélection de projets sous contrainte budgétaire est une variante du problème du sac à dos, connu pour être NP-complet. Chaque nouveau projet double potentiellement l'espace des solutions à explorer, ce qui explique la croissance exponentielle observée des temps de calcul. En effet, avec $p$ projets, l'espace des solutions possibles est de taille $2^p$, et même les algorithmes les plus sophistiqués ne peuvent échapper à cette complexité fondamentale dans les pires cas.
 
 Finalement, cette analyse suggère qu'il est relativement peu coûteux d'envisager de nombreux scénarios différents, tandis que l'ajout de nouveux projets complexifie rapidement le problème. Cette propriété est particulièrement intéressante dans un contexte d'optimisation robuste, où l'on cherche à se prémunir contre différents scénarios possibles : on peut explorer un large éventail de futurs possibles sans que cela n'impacte drastiquement la complexité de résolution du problème.
+
+#figure(caption: [ Maxmin par projets ])[
+  #plot-q14(data-maxmin, by: "project")
+]
+
+#figure(caption: [ Minmax regret par projets ])[
+  #plot-q14(data-minmax-regret, by: "project")
+]
 
 == Partie 2
 
