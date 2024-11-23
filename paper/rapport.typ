@@ -23,7 +23,7 @@
 == Partie 1
 
 === 1.1
-On traite la linéarisation du critère maximun dans le contexte de la sélection de projets sous incertitude. On cherche la solution dont l'évaluation dans le pire scénario est la meilleure possible.
+On traite la linéarisation du critère maximin dans le contexte de la sélection de projets sous incertitude. On cherche la solution dont l'évaluation dans le pire scénario est la meilleure possible.
 
 Considérons l'ensemble de $p = 10$ projets, caractérisés comme suit par des coût ($c$) et deux variables d'utilités ($s^1$ et $s^2$) :
 $
@@ -53,13 +53,12 @@ $
 Pour obtenir un programme linéraire en variables mixtes, nous introduisons une variable $alpha$ représentant le minimum des utilités. Le problème se reformule alors :
 $
 max alpha \
-cases(
+s.c. cases(
   alpha <= sum_(j=1)^p s^1_j x_j \
   alpha <= sum_(j=1)^p s^2_j x_j \
-  sum_(j=1)^p c_j x_j <= 100 \
-  x_j in {0,1} quad forall j in {1,...,p} \
-  alpha in RR
-)
+  sum_(j=1)^p c_j x_j <= 100
+) \
+x_j in {0,1} quad forall j in {1,...,p}, alpha in RR
 $
 
 L'implémentation de ce programme linéaire a été réalisée en Python à l'aide de la librairie `pulp` et du solveur `gurobi` (voir le fichier `src/q11.py`). La résolution nous fournit les résultats suivants.
@@ -109,13 +108,12 @@ $
 Pour obtenir un programme linéaire en variables mixtes, nous introduisons une variables $beta$ représentant le regret maximum. Le problème se reformule alors :
 $
 min beta \
-cases(
+s.c. cases(
   beta >= z^*_1 - sum_(j=1)^p s^1_j x_j \
   beta >= z^*_2 - sum_(j=1)^p s^2_j x_j \
-  sum_(j=1)^p c_j x_j <= 100 \
-  x_j in {0,1} quad forall j in {1,...,p} \
-  alpha in RR
-)
+  sum_(j=1)^p c_j x_j <= 100
+) \
+x_j in {0,1} quad forall j in {1,...,p}, beta in RR
 $
 
 L'implémentation de ce programme linéaire a été réalisée en Python (voir le fichier `src/q12.py`). La résolution nous fournit les résultats suivants.
@@ -188,7 +186,7 @@ $
 (1 - lambda) x^*_1 + lambda x^*_2
 $
 
-Alors, on aurait obtenue une solution sur le segment. Cependant, graphiquement, on peut voir que nos deux solutions $x^*$ et $x'^*$ ne sont pas sur ce segment. Le critère maxmin et minmax regret sont donc bien différent et représente une nouvelle façon d'envisager le problème.
+Alors, on aurait obtenue une solution sur le segment. Cependant, graphiquement, on peut voir que nos deux solutions $x^*$ et $x'^*$ ne sont pas sur ce segment. Les critère maxmin et minmax regret sont donc bien différents et représentent une nouvelle façon d'envisager le problème.
 
 === 1.4
 On s'intéresse maintenant à l'évolution des temps de résolution des deux critères (maxmin et minmax regret) en fonction du nombre de scénarios ($n={5, 10, 15, ..., 50}$) et du nombre de projets ($p={10, 15, 20, ..., 50}$). Pour évaluer systématiquement leurs performances respectives, nous générons pour chaque couple $(n,p)$ un ensemble de 50 instances aléatoires. Les coûts et utilités de chaque instance sont tirés uniformément dans l'intervalle $[1, 100]$, avec un budget fixé à $50%$ de la somme totale des coûts des projets. Cette approche nous permet d'obtenir une distribution stastistiquement significative des temps de résolution pour différentes tailles de problèmes.
@@ -316,7 +314,7 @@ L'implémentation de ce programme linéaire a été réalisée en Python à l'ai
             (x, y),
             radius: 0.005,
             stroke: none,
-            fill: color.opacify(-90%)
+            fill: color.opacify(-85%)
           )
         }
       }
@@ -432,7 +430,7 @@ L'implémentation de ce programme linéaire a été réalisée en Python à l'ai
             (x, y),
             radius: 0.005,
             stroke: none,
-            fill: color.opacify(-90%)
+            fill: color.opacify(-85%)
           )
         }
       }
@@ -497,33 +495,101 @@ L'implémentation de ce programme linéaire a été réalisée en Python à l'ai
 
 L'analyse des temps de résolution révèle un comportement différent entre l'augmentation du nombre de scénarios et celle du nombre de projets. la croissance linéaire observée avec le nombre de scénarios s'explique par la structure même des programmes linéaires : chaque nouveau scénario ajoute simplement un nouvel ensemble de contraintes linéaires au problème, sans modifier la nature combinatoire du problème sous-jacent.
 
-#figure(caption: [ Maxmin par scenarios ])[
-  #plot-q14(data-maxmin, by: "scenario")
-]
-
-#figure(caption: [ Minmax regret par scenarios ])[
-  #plot-q14(data-minmax-regret, by: "scenario")
-]
+// #figure(caption: [ Maxmin par scenarios ])[
+//   #plot-q14(data-maxmin, by: "scenario")
+// ]
+//
+// #figure(caption: [ Minmax regret par scenarios ])[
+//   #plot-q14(data-minmax-regret, by: "scenario")
+// ]
 
 En revance, l'ajout de nouveaux projets impacte directement la complexité combinatoire du problème. Le problème de sélection de projets sous contrainte budgétaire est une variante du problème du sac à dos, connu pour être NP-complet. Chaque nouveau projet double potentiellement l'espace des solutions à explorer, ce qui explique la croissance exponentielle observée des temps de calcul. En effet, avec $p$ projets, l'espace des solutions possibles est de taille $2^p$, et même les algorithmes les plus sophistiqués ne peuvent échapper à cette complexité fondamentale dans les pires cas.
 
 Finalement, cette analyse suggère qu'il est relativement peu coûteux d'envisager de nombreux scénarios différents, tandis que l'ajout de nouveux projets complexifie rapidement le problème. Cette propriété est particulièrement intéressante dans un contexte d'optimisation robuste, où l'on cherche à se prémunir contre différents scénarios possibles : on peut explorer un large éventail de futurs possibles sans que cela n'impacte drastiquement la complexité de résolution du problème.
 
-#figure(caption: [ Maxmin par projets ])[
-  #plot-q14(data-maxmin, by: "project")
-]
-
-#figure(caption: [ Minmax regret par projets ])[
-  #plot-q14(data-minmax-regret, by: "project")
-]
+// #figure(caption: [ Maxmin par projets ])[
+//   #plot-q14(data-maxmin, by: "project")
+// ]
+//
+// #figure(caption: [ Minmax regret par projets ])[
+//   #plot-q14(data-minmax-regret, by: "project")
+// ]
 
 == Partie 2
 
 === 2.1
-#lorem(120)
+Soit le vecteur $L(z)$ défini pour tout $z in RR^n$ comme $(L_1(z), ..., L_n(z))$ où chaque composante $L_k (z) = sum_(i=1)^k z_(\(i\))$. Pour tout vecteur $z$, nous notons $z_(\(i\))$ la i-ème composante du vecteur $z$ trié par ordre croissant, représentant ainsi la i-ème plus faible valeur de $z$. D'où $L_k (z)$ représente la somme des k-ème plus faible utilités obtenues dans le problème initial.
+
+On considère maintenant le programme linéaire suivant.
+
+$
+min sum_(i=1)^n a_(i k) z_i \
+s.c. cases(
+  sum_(i=1)^n a_(i k) = k
+) \
+a_(i k) in {0, 1} quad forall i in {1,...,n}
+$
+
+On cherche à trouver la solution de ce programme linéaire.
+
+On a introduit pour représenter ce programme une nouvelle variable $a_(i k)$, une variable binaire avec la seule contrainte que la somme de ces variables doit être égale à $k$. Comem $a_(i k)$ est une variable binaire, la somme du $min$ revient à sommer des termes $z_i$ en les prenant si $a_(i k) = 1$ et en ne les prenant pas s $a_(i k) = 0$. On cherche ensuite à minimiser cette valeur.
+
+On va maintenant montrer ce pourquoi $a_k = (a_(1 k), ..., a_(n k))$ de valeur $L_k (z)$ est la solution optimale de notre programme linéaire. Tout d'abord, montrons que $a_k$ est bien une solution réalisable.
+
+$L_k (z)$ est une somme de exactement $k$ $z_i$, ils sont simplement triés par ordre croissant. On peut donc bien voir $L_k (z) = a_(i k) z_i$. Cela veut simplement dire que $a_(i k) = 1$ si $z_i$ fait parti des $k$ plus petites valeurs de $z$ et $a_(i k) = 0$ sinon. D'où  $sum_(i=1)^n a_(i k) = k$, la solution $a_k$ est bien une résolution réalisable.
+
+Supposons maintenant par l'absurde qu'il existe $a'_k$ une solution optimale, donc de valeur inférieure à $L_k (z)$. On note $I$ l'ensemble des indices $i$ tels que $a'_(i k) = 1$ et $J$ l'ensemble des indices des $k$ plus petites composantes de $z$.
+Si $I eq.not J$, et comme $|I| = |J|$, alors il existe $i_1 in I \\ J$ et $i_2 in J \\ I$.
+On construit alors une nouvelle solution $a''_k$, tel que $a''_(i_1 k) = 0$ et $a''_(i_2 k) = 1$ et $a''_(i k) = a'_(i k)$ pour toutes les autres valeurs de $i$. Cette solution est toujours réalisable, et de plus, par définition de $j$, $z_(i_2) < z_(i_1)$, donc $sum_(i in J) a''_(i k) z_i < sum_(i in I) a'_(i k) z_i$. On a donc trouvé une solution avec une valeur inférieure à celle de $a'_k$, donc $a'_k$ n'est pas la solution optimale, ce qui est une contradiction.
+
+Par conséquent, $L_k (z)$ est bien la solution optimale de notre programme linéaire.
 
 === 2.2
-#lorem(110)
+On part du programme linéaire relaxé:
+
+$
+min sum_(i=1)^n a_(i k) z_i \
+s.c. cases(
+  sum_(i=1)^n a_(i k) = k \
+  a_(i k) <= 1 quad forall i in {1, ..., n}
+) \
+a_(i k) >= 0 quad forall i in {1, ..., n}
+$
+
+Pour construire le dual, on suit la méthode standard. Les contraintes du primal deviennent des variables dans le dual, les variables du primal deviennent des contraintes dans le dual et le sens de l'optimisation s'inverse. D'où le programme dual $D_k$ suivant :
+
+$
+max k r_k - sum_(i=0)^n b_(i k) \
+s.c. cases(
+  r_k - b_(i k) <= z_i quad forall i in {1, ..., n}
+) \
+b_(i k) >= 0 quad forall i in {1, ..., n}, r_k in RR
+$
+
+Soit $z = (2, 9, 6, 8, 5, 4)$, on cherche désormais à calculer la valeur de $L(z)$. On peut le faire de deux façons différentes, tout d'abord, en triant à la main le vecteur $z$, pour obtenir $z' = (2, 4, 5, 6, 8, 9)$ et calculant le vecteur cumulé, ce qui correspond à $L(z)$.
+
+$
+L_1 (z) = 2 \
+L_2 (z) = 2 + 4 = 6 \
+L_3 (z) = 6 + 5 = 11 \
+L_4 (z) = 11 + 6 = 17 \
+L_5 (z) = 17 + 8 = 25 \
+L_6 (z) = 25 + 9 = 34 \
+$
+
+Ce qui nous permet de conclure :
+
+$
+L(z) = (2, 6, 11, 17, 25, 34)
+$
+
+On peut aussi écrire un programme linéaire pour résoudre le même dual, ce qui a été réalisé en Python (voir le fichier `src/q22.py`. La résolution nous fournit les résolutats suivants.
+
+$
+L(z) = (2, 6, 11, 17, 25, 34)
+$
+
+Les deux façon de calculer la valeur de $L(z)$ renvoie bien exactement les mêmes résultats, comme on attendu.
 
 === 2.3
 #lorem(150)
