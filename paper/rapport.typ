@@ -56,7 +56,7 @@ max alpha \
 s.c. cases(
   alpha <= sum_(j=1)^p s^1_j x_j \
   alpha <= sum_(j=1)^p s^2_j x_j \
-  sum_(j=1)^p c_j x_j <= 100
+  sum_(j=1)^p c_j x_j <= B
 ) \
 x_j in {0,1} quad forall j in {1,...,p}, alpha in RR
 $
@@ -92,7 +92,7 @@ Reprenons les données de la partie 1.1 avec les mêmes vecteurs de coûts et d'
 
 La première étape consiste à déterminer les utilités optimales $z^*_1$ et $z^*_2$ pour chaque scénario, qui sont obtenues en résolvant deux problèmes d'optimisations distincts :
 $
-z^*_i = max_(x in X) z_i(x) = max_(x in X) sum_(j=1)^p s_i_j x_j quad forall i in {1,2}
+z^*_i = max_(x in X) z_i(x) = max_(x in X) sum_(j=1)^p s_j^i x_j quad forall i in {1,2}
 $
 
 où $X$ représente toujours l'ensemble des solutions réalisables défini par :
@@ -111,7 +111,7 @@ min beta \
 s.c. cases(
   beta >= z^*_1 - sum_(j=1)^p s^1_j x_j \
   beta >= z^*_2 - sum_(j=1)^p s^2_j x_j \
-  sum_(j=1)^p c_j x_j <= 100
+  sum_(j=1)^p c_j x_j <= B
 ) \
 x_j in {0,1} quad forall j in {1,...,p}, beta in RR
 $
@@ -559,7 +559,7 @@ $
 Pour construire le dual, on suit la méthode standard. Les contraintes du primal deviennent des variables dans le dual, les variables du primal deviennent des contraintes dans le dual et le sens de l'optimisation s'inverse. D'où le programme dual $D_k$ suivant :
 
 $
-max k r_k - sum_(i=0)^n b_(i k) \
+max k r_k - sum_(i=1)^n b_(i k) \
 s.c. cases(
   r_k - b_(i k) <= z_i quad forall i in {1, ..., n}
 ) \
@@ -592,13 +592,98 @@ $
 Les deux façon de calculer la valeur de $L(z)$ renvoie bien exactement les mêmes résultats, comme on attendu.
 
 === 2.3
-#lorem(150)
+On cherche à montrer le résultat suivant.
+
+$
+g = sum_(k=1)^n w'_k L_k (z) \
+= sum_(k=1)^(n-1) (w_k - w_(k+1)) L_k (z(x)) + w_n L_n (z) \
+= sum_(k=1)^(n-1) w_k L_k (z) - sum_(k=1)^(n-1) w_(k+1) L_k (z) + w_n L_n (z) \
+
+= [w_1 L_1 (z) + w_2 L_2 (z) + ... + w_(n-1) L_(n-1) (z)] \
+- [w_2 L_1 (z) + ... + w_(n-1) L_(n-2) (z) + w_(n) L_(n-1) (z)] \
++ w_n L_n (z) \
+
+= w_1 L_1 (z) + w_2 (L_2 (z) - L_1 (z)) + ... + w_(n-1) \
+(L_(n-1) (z) - L_(n-2) (z)) + w_n (L_n (z) - L_(n-1) (z))
+$
+
+Avant de continuer le calcul de cette somme, on remarque que :
+
+$
+L_1 (z) = sum_(i=1)^1 z_(\(i\)) = z_(\(1\))
+$
+
+On s'intéresse aussi aux termes récurrents, ce qui nous permet d'observer que :
+
+$
+L_k (z) - L_(k-1) (z) \
+= sum_(i=1)^k z_(\(i\)) - sum_(i=1)^(k-1) z_(\(i\)) \
+= sum_(i=1)^(k-1) z_(\(i\)) + z_(\(k\)) - sum_(i=1)^(k-1) z_(\(i\)) \
+= z_(\(k\))
+$
+
+
+D'où, si on reprend le calcul de $g$ :
+
+$
+g = w_1 z_(\(1\)) + w_2 z_(\(2\)) + ... + w_(n-1) z_(\(n-1\)) + w_(n) z_(\(n\)) \
+= sum_(i=1)^n w_i z_(\(i\))
+$
+
+Ceci montre bien que:
+
+$
+g(x) = sum_(i=1)^n w_i z_(\(i\)) (x) = sum_(k=1)^n w'_k L_k (z(x))
+$
 
 === 2.4
-#lorem(130)
+On va désormais passer de la formulation du dual à une formulation finale. On sait que $g(x) = sum_(i=1)^n w'_k L_k (z(x))$ et que $L_k (z(x)) = max k r_k - sum_(i=1)^n b_(i k)$ l'optimum de notre programme dual. On va donc pouvoir combiner ces deux connaissances pour arriver à une solution de résolution. Pour la linéarisation en partie 1, nous avions pu introduire une unique variable $alpha$, cette fois-ci, on voit qu'on a besoin d'une réfléxion plus complexe.
+
+$
+g(x) = sum_(k=1)^n w'_k L_k (z(x)) = sum_(k=1)^n w'_k max k r_k - sum_(i=1)^n b_(i k) \
+= max sum_(k=1)^n w'_k (k r_k - sum_(i=1)^n b_(i k))
+$
+
+Pour compléter l'écriture de ce programme linéaire, on doit encore introduire la valeur de $z_i (x) = sum_(j=1)^p s_j^i x_j$, ce qui requiert d'introduire une nouvelle variable $x_j in {0, 1}$, finalement, on doit toujours ajouter le fait que la solution doit être réalisable, ce qui est identique à ce que l'on avait fait précedemment.
+
+$
+max sum_(k=1)^n w'_k (k r_k - sum_(i=1)^n b_(i k)) \
+s.c. cases(r_k - b_(i k) <= sum_(j=1)^p s_j^i x_j quad forall i in {1\, ...\, n},
+sum_(j=1)^p c_j x_j <= B
+) \
+b_(i k) >= 0 quad forall i,k in {1, ..., n}, \
+r_k in RR quad forall k in {1, ..., n}, \ 
+x_j in {0, 1} quad forall j in {1, ..., p}
+$
+
+L'implémentation de ce programme linéaire a été réalisé en Python (voir le fichier `src/q24.py`). La résolution nous fournit les résultats suivants.
+
+#figure[
+Vecteur $x^*$: $(0, 1, 1, 1, 0, 0, 1, 1, 1, 0)$ \
+Coût total: $85K €$ \
+Valeur image: $z(x*) = (66, 66)$ \
+Valeur OWA optimale: $198$ \
+]
+
+On note que cette solution est identique dans notre exemple à la solution obtenue durant la partie 1.1.
 
 === 2.5
-#lorem(140)
+On souhaite désormais évaluer une nouvelle solution. Plusieurs changements sont à faire. Tout d'abord :
+
+$
+g(x) = sum_(i=1)^n w_i r(x, s_(\(i\))) \
+// TODO: il me semble que ceci est faux
+= sum_(i=1)^n w_i (z_i^* - z_(\(i\)) (x)) \
+= sum_(i=1)^n w_i z_i^* - sum_(i=1)^n w_i z_(\(i\))(x) \
+// TODO: il me semble que ceci est faux
+= sum_(i=1)^n w_i z_i^* - sum_(k=1)^n w'_k L_k (z(x)) \
+// TODO: il me semble que ceci est faux
+= sum_(i=1)^n w_i z_i^* - sum_(k=1)^n w'_k ( max k r_k - sum_(i=1)^n b_(i k) ) \
+// TODO: il me semble que ceci est faux
+= max sum_(i=1)^n w_i z_i^* - sum_(k=1)^n w'_k (k r_k - sum_(i=1)^n b_(i k) ) \
+$
+
+Grâce à cette observation, on peut désormais écrire le programme suivant.
 
 === 2.6
 #lorem(160)
