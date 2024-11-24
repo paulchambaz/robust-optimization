@@ -2,35 +2,44 @@
 
 import pulp as pl  # type:ignore
 
-p = 10
+
+def maxmin_project_selection(n, p, costs, utilities, B):
+    prob = pl.LpProblem("maxmin_project_selection", pl.LpMaximize)
+    x = [pl.LpVariable(f"x_{j}", cat=pl.LpBinary) for j in range(p)]
+    alpha = pl.LpVariable("alpha", lowBound=None)
+
+    prob += alpha
+    for i in range(n):
+        prob += pl.lpSum(utilities[i][j] * x[j] for j in range(p)) >= alpha
+    prob += pl.lpSum(costs[j] * x[j] for j in range(p)) <= B
+
+    prob.solve(pl.GUROBI_CMD(msg=0))
+
+    status = pl.LpStatus[prob.status]
+    solution = [int(pl.value(x[j])) for j in range(p)]
+    optimal = int(pl.value(prob.objective))
+
+    return status, solution, optimal
+
+
 B = 100
 costs = [60, 10, 15, 20, 25, 20, 5, 15, 20, 60]
-utilities_s1 = [70, 18, 16, 14, 12, 10, 8, 6, 4, 2]
-utilities_s2 = [2, 4, 6, 8, 10, 12, 14, 16, 18, 70]
+utilities = [
+    [70, 18, 16, 14, 12, 10, 8, 6, 4, 2],
+    [2, 4, 6, 8, 10, 12, 14, 16, 18, 70],
+]
+n = len(utilities)
+p = len(costs)
 
-prob = pl.LpProblem("maxmin_project_selection", pl.LpMaximize)
-x = [pl.LpVariable(f"x_{j}", cat=pl.LpBinary) for j in range(p)]
-alpha = pl.LpVariable("alpha", lowBound=None)
+status, solution, optimal = maxmin_project_selection(n, p, costs, utilities, B)
 
-prob += alpha
-prob += pl.lpSum(utilities_s1[j] * x[j] for j in range(p)) >= alpha
-prob += pl.lpSum(utilities_s2[j] * x[j] for j in range(p)) >= alpha
-prob += pl.lpSum(costs[j] * x[j] for j in range(p)) <= B
-
-# prob.solve(pl.GLPK())
-prob.solve(pl.GUROBI_CMD(msg=0))
-
-solution = [int(pl.value(x[j])) for j in range(p)]
 selected_projects = [j + 1 for j in range(p) if solution[j] == 1]
-optimal_alpha = int(pl.value(alpha))
-
-z1 = sum(utilities_s1[j] * solution[j] for j in range(p))
-z2 = sum(utilities_s2[j] * solution[j] for j in range(p))
+z = [sum(utilities[i][j] * solution[j] for j in range(p)) for i in range(n)]
 total_cost = sum(costs[j] * solution[j] for j in range(p))
 
-print(f"Status: {pl.LpStatus[prob.status]}")
+print(f"Status: {status}")
 print(f"Vector x*: {solution}")
 print(f"Selected projects: {selected_projects}")
 print(f"Total cost: {total_cost}")
-print(f"Vector z(x*) = ({z1}, {z2})")
-print(f"Optimal value g(x*) = {optimal_alpha}")
+print(f"Vector z(x*) = {tuple(z)}")
+print(f"Optimal value g(x*) = {optimal}")

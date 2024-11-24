@@ -1,23 +1,23 @@
-# question 1.4 - paul chambaz & zelie van der meer - 2024
+# question 2.6 - paul chambaz & zelie van der meer - 2024
 
 import csv
 import random
 import time
 
-from q11 import maxmin_project_selection
-from q12 import minmax_regret_project_selection
+from q24 import maxowa_project_selection
+from q25 import minowa_regret_project_selection
 
 ns = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
 ps = [10, 15, 20, 25, 30, 35, 40, 45, 50]
 num_repetitions = 50
 
-with open("paper/data/q14.csv", "w", newline="") as csvfile:
+with open("paper/data/q26.csv", "w", newline="") as csvfile:
     fieldnames = [
         "n_scenarios",
         "n_projects",
         "repetition",
-        "maxmin_time",
-        "minmax_regret_time",
+        "maxowa_time",
+        "minowa_regret_time",
     ]
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
     writer.writeheader()
@@ -32,25 +32,26 @@ with open("paper/data/q14.csv", "w", newline="") as csvfile:
                     [random.randint(1, 100) for j in range(p)] for i in range(n)
                 ]
                 B = int(sum(costs) * 0.50)
+                w = sorted([random.randint(1, n) for i in range(n)], reverse=True)
 
                 start_time = time.time()
-                maxmin_project_selection(n, p, costs, utilities, B)
+                maxowa_project_selection(n, p, costs, utilities, B, w)
                 maxmin_time = time.time() - start_time
 
                 start_time = time.time()
-                minmax_regret_project_selection(n, p, costs, utilities, B)
+                minowa_regret_project_selection(n, p, costs, utilities, B, w)
                 minmax_regret_time = time.time() - start_time
 
                 print(f"  Repetition {rep + 1}/{num_repetitions}:")
-                print(f"    Maxmin time: {maxmin_time:.3f}s")
-                print(f"    Minmax regret time: {minmax_regret_time:.3f}s")
+                print(f"    Maxowa time: {maxmin_time:.3f}s")
+                print(f"    Minowa regret time: {minmax_regret_time:.3f}s")
 
                 writer.writerow(
                     {
                         "n_scenarios": n,
                         "n_projects": p,
                         "repetition": rep + 1,
-                        "maxmin_time": maxmin_time,
-                        "minmax_regret_time": minmax_regret_time,
+                        "maxowa_time": maxmin_time,
+                        "minowa_regret_time": minmax_regret_time,
                     }
                 )
