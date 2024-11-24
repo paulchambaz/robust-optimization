@@ -1,2 +1,3 @@
 .direnv/
 gurobi.log
+*/__pycache__/*
