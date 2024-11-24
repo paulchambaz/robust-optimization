@@ -200,12 +200,12 @@ L'implémentation de ce programme linéaire a été réalisée en Python à l'ai
 
 L'analyse des temps de résolution révèle un comportement différent entre l'augmentation du nombre de scénarios et celle du nombre de projets. la croissance linéaire observée avec le nombre de scénarios s'explique par la structure même des programmes linéaires : chaque nouveau scénario ajoute simplement un nouvel ensemble de contraintes linéaires au problème, sans modifier la nature combinatoire du problème sous-jacent.
 
-#figure(caption: [ Maxmin par scenarios ])[
-  #plot-performance(data-maxmin, by: "scenario")
+#figure(caption: [ Maxmin par scénarios ])[
+  #plot-performance-scenario(data-maxmin)
 ]
 
-#figure(caption: [ Minmax regret par scenarios ])[
-  #plot-performance(data-minmax-regret, by: "scenario")
+#figure(caption: [ Minmax regret par scénarios ])[
+  #plot-performance-scenario(data-minmax-regret)
 ]
 
 En revance, l'ajout de nouveaux projets impacte directement la complexité combinatoire du problème. Le problème de sélection de projets sous contrainte budgétaire est une variante du problème du sac à dos, connu pour être NP-complet. Chaque nouveau projet double potentiellement l'espace des solutions à explorer, ce qui explique la croissance exponentielle observée des temps de calcul. En effet, avec $p$ projets, l'espace des solutions possibles est de taille $2^p$, et même les algorithmes les plus sophistiqués ne peuvent échapper à cette complexité fondamentale dans les pires cas.
@@ -213,11 +213,11 @@ En revance, l'ajout de nouveaux projets impacte directement la complexité combi
 Finalement, cette analyse suggère qu'il est relativement peu coûteux d'envisager de nombreux scénarios différents, tandis que l'ajout de nouveux projets complexifie rapidement le problème. Cette propriété est particulièrement intéressante dans un contexte d'optimisation robuste, où l'on cherche à se prémunir contre différents scénarios possibles : on peut explorer un large éventail de futurs possibles sans que cela n'impacte drastiquement la complexité de résolution du problème.
 
 #figure(caption: [ Maxmin par projets ])[
-  #plot-performance(data-maxmin, by: "project")
+  #plot-performance-project(data-maxmin)
 ]
 
 #figure(caption: [ Minmax regret par projets ])[
-  #plot-performance(data-minmax-regret, by: "project")
+  #plot-performance-project(data-minmax-regret)
 ]
 
 == Partie 2
@@ -461,20 +461,20 @@ L'implémentation de ce programme linéaire a été réalisée en Python(voir le
   )
 })
 
-#figure(caption: [ MaxOWA par scenarios ])[
-  #plot-performance(data-maxowa, by: "scenario")
+#figure(caption: [ MaxOWA par scénarios ])[
+  #plot-performance-scenario(data-maxowa)
 ]
 
-#figure(caption: [ MinOWA regret par scenarios ])[
-  #plot-performance(data-minowa-regret, by: "scenario")
+#figure(caption: [ MinOWA regret par scénarios ])[
+  #plot-performance-scenario(data-minowa-regret)
 ]
 
 #figure(caption: [ MaxOWA par projets ])[
-  #plot-performance(data-maxowa, by: "project")
+  #plot-performance-project(data-maxowa)
 ]
 
 #figure(caption: [ MinOWA regret par projets ])[
-  #plot-performance(data-minowa-regret, by: "project")
+  #plot-performance-project(data-minowa-regret)
 ]
 
 == Partie 3
