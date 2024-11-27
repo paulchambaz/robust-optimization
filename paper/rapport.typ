@@ -301,7 +301,7 @@ On cherche à montrer le résultat suivant.
 
 $
 g = sum_(k=1)^n w'_k L_k (z) \
-= sum_(k=1)^(n-1) (w_k - w_(k+1)) L_k (z(x)) + w_n L_n (z) \
+= sum_(k=1)^(n-1) (w_k - w_(k+1)) L_k (z) + w_n L_n (z) \
 = sum_(k=1)^(n-1) w_k L_k (z) - sum_(k=1)^(n-1) w_(k+1) L_k (z) + w_n L_n (z) \
 
 = [w_1 L_1 (z) + w_2 L_2 (z) + ... + w_(n-1) L_(n-1) (z)] \
