@@ -538,18 +538,18 @@ L'implémentation de ce programme linéaire a été réalisée en Python(voir le
   #plot-performance-scenario(data-minowa-regret-path)
 ]
 
-#figure(caption: [ Maxmin par projets ])[
+#figure(caption: [ Maxmin par nœuds ])[
   #plot-performance-project(data-maxmin-path)
 ]
 
-#figure(caption: [ Minmax regret par projets ])[
+#figure(caption: [ Minmax regret par nœuds ])[
   #plot-performance-project(data-minmax-regret-path)
 ]
 
-#figure(caption: [ MaxOWA par projets ])[
+#figure(caption: [ MaxOWA par nœuds ])[
   #plot-performance-project(data-maxowa-path)
 ]
 
-#figure(caption: [ MinOWA regret par projets ])[
+#figure(caption: [ MinOWA regret par nœuds ])[
   #plot-performance-project(data-minowa-regret-path)
 ]
