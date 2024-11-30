@@ -362,7 +362,7 @@
 
     let legend-start = 0.5
     for (i, scenario) in scenarios.enumerate() {
-      let color-idx = calc.floor((scenario - 10) / 5)
+      let color-idx = calc.floor((scenario - 5) / 5)
       let color = plot-colors.at(color-idx)
       let y-pos = legend-start + (i * 0.06)
       circle((1.1, y-pos), radius: 0.01, stroke: none, fill: color)

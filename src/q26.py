@@ -32,7 +32,7 @@ with open("paper/data/q26.csv", "w", newline="") as csvfile:
                     [random.randint(1, 100) for j in range(p)] for i in range(n)
                 ]
                 B = int(sum(costs) * 0.50)
-                w = sorted([random.randint(1, n) for i in range(n)], reverse=True)
+                w = sorted([random.randint(0, n) for i in range(n)], reverse=True)
 
                 start_time = time.time()
                 maxowa_project_selection(n, p, costs, utilities, B, w)

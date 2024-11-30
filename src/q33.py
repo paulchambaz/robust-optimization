@@ -40,8 +40,8 @@ def path_selection(source, destination, costs, p, scenario):
     prob.solve(pl.GUROBI_CMD(msg=0))
 
     status = pl.LpStatus[prob.status]
-    solution = [[int(pl.value(x[i][j])) for j in range(p)] for i in range(p)]
-    optimal = int(pl.value(prob.objective))
+    solution = [[int(pl.value(x[i][j]) or 0) for j in range(p)] for i in range(p)]
+    optimal = int(pl.value(prob.objective) or 0)
 
     return status, solution, optimal
 
@@ -66,8 +66,8 @@ def maxmin_path_selection(source, destination, costs, n, p):
     prob.solve(pl.GUROBI_CMD(msg=0))
 
     status = pl.LpStatus[prob.status]
-    solution = [[int(pl.value(x[i][j])) for j in range(p)] for i in range(p)]
-    optimal = int(pl.value(prob.objective))
+    solution = [[int(pl.value(x[i][j]) or 0) for j in range(p)] for i in range(p)]
+    optimal = int(pl.value(prob.objective) or 0)
 
     return status, solution, optimal
 
@@ -97,8 +97,8 @@ def minmax_regret_path_selection(source, destination, costs, n, p):
     prob.solve(pl.GUROBI_CMD(msg=0))
 
     status = pl.LpStatus[prob.status]
-    solution = [[int(pl.value(x[i][j])) for j in range(p)] for i in range(p)]
-    optimal = int(pl.value(prob.objective))
+    solution = [[int(pl.value(x[i][j]) or 0) for j in range(p)] for i in range(p)]
+    optimal = int(pl.value(prob.objective) or 0)
 
     return status, solution, optimal, optimals
 
@@ -132,8 +132,8 @@ def maxowa_path_selection(source, destination, costs, n, p, w):
     prob.solve(pl.GUROBI_CMD(msg=0))
 
     status = pl.LpStatus[prob.status]
-    solution = [[int(pl.value(x[i][j])) for j in range(p)] for i in range(p)]
-    optimal = int(pl.value(prob.objective))
+    solution = [[int(pl.value(x[i][j]) or 0) for j in range(p)] for i in range(p)]
+    optimal = int(pl.value(prob.objective) or 0)
 
     return status, solution, optimal
 
@@ -172,8 +172,8 @@ def minowa_regret_path_selection(source, destination, costs, n, p, w):
     prob.solve(pl.GUROBI_CMD(msg=0))
 
     status = pl.LpStatus[prob.status]
-    solution = [[int(pl.value(x[i][j])) for j in range(p)] for i in range(p)]
-    optimal = int(pl.value(prob.objective))
+    solution = [[int(pl.value(x[i][j]) or 0) for j in range(p)] for i in range(p)]
+    optimal = int(pl.value(prob.objective) or 0)
 
     return status, solution, optimal, optimals
 

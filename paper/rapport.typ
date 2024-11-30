@@ -183,14 +183,14 @@ On s'intéresse maintenant à l'évolution des temps de résolution des deux cri
 L'implémentation de ce programme linéaire a été réalisée en Python à l'aide de la librairie `pulp` et du solveur `gurobi` (voir le fichier `src/q14.py`). La résolution nous fournit les résultats suivants.
 
 #let data-q14 = csv("data/q14.csv", row-type: dictionary)
-#let data-maxmin = data-q14.map(element => {
+#let data-maxmin-project = data-q14.map(element => {
   (
     scenario: int(element.at("n_scenarios")),
     project: int(element.at("n_projects")),
     value: float(element.at("maxmin_time")),
   )
 })
-#let data-minmax-regret = data-q14.map(element => {
+#let data-minmax-regret-project = data-q14.map(element => {
   (
     scenario: int(element.at("n_scenarios")),
     project: int(element.at("n_projects")),
@@ -201,11 +201,11 @@ L'implémentation de ce programme linéaire a été réalisée en Python à l'ai
 L'analyse des temps de résolution révèle un comportement différent entre l'augmentation du nombre de scénarios et celle du nombre de projets. la croissance linéaire observée avec le nombre de scénarios s'explique par la structure même des programmes linéaires : chaque nouveau scénario ajoute simplement un nouvel ensemble de contraintes linéaires au problème, sans modifier la nature combinatoire du problème sous-jacent.
 
 #figure(caption: [ Maxmin par scénarios ])[
-  #plot-performance-scenario(data-maxmin)
+  #plot-performance-scenario(data-maxmin-project)
 ]
 
 #figure(caption: [ Minmax regret par scénarios ])[
-  #plot-performance-scenario(data-minmax-regret)
+  #plot-performance-scenario(data-minmax-regret-project)
 ]
 
 En revance, l'ajout de nouveaux projets impacte directement la complexité combinatoire du problème. Le problème de sélection de projets sous contrainte budgétaire est une variante du problème du sac à dos, connu pour être NP-complet. Chaque nouveau projet double potentiellement l'espace des solutions à explorer, ce qui explique la croissance exponentielle observée des temps de calcul. En effet, avec $p$ projets, l'espace des solutions possibles est de taille $2^p$, et même les algorithmes les plus sophistiqués ne peuvent échapper à cette complexité fondamentale dans les pires cas.
@@ -213,11 +213,11 @@ En revance, l'ajout de nouveaux projets impacte directement la complexité combi
 Finalement, cette analyse suggère qu'il est relativement peu coûteux d'envisager de nombreux scénarios différents, tandis que l'ajout de nouveux projets complexifie rapidement le problème. Cette propriété est particulièrement intéressante dans un contexte d'optimisation robuste, où l'on cherche à se prémunir contre différents scénarios possibles : on peut explorer un large éventail de futurs possibles sans que cela n'impacte drastiquement la complexité de résolution du problème.
 
 #figure(caption: [ Maxmin par projets ])[
-  #plot-performance-project(data-maxmin)
+  #plot-performance-project(data-maxmin-project)
 ]
 
 #figure(caption: [ Minmax regret par projets ])[
-  #plot-performance-project(data-minmax-regret)
+  #plot-performance-project(data-minmax-regret-project)
 ]
 
 == Partie 2
@@ -446,14 +446,14 @@ Cette approche nous permet d'obtenir une distribution stastistiquement significa
 L'implémentation de ce programme linéaire a été réalisée en Python(voir le fichier `src/q26.py`). La résolution nous fournit les résultats suivants.
 
 #let data-q26 = csv("data/q26.csv", row-type: dictionary)
-#let data-maxowa = data-q26.map(element => {
+#let data-maxowa-project = data-q26.map(element => {
   (
     scenario: int(element.at("n_scenarios")),
     project: int(element.at("n_projects")),
     value: float(element.at("maxowa_time")),
   )
 })
-#let data-minowa-regret = data-q26.map(element => {
+#let data-minowa-regret-project = data-q26.map(element => {
   (
     scenario: int(element.at("n_scenarios")),
     project: int(element.at("n_projects")),
@@ -462,19 +462,19 @@ L'implémentation de ce programme linéaire a été réalisée en Python(voir le
 })
 
 #figure(caption: [ MaxOWA par scénarios ])[
-  #plot-performance-scenario(data-maxowa)
+  #plot-performance-scenario(data-maxowa-project)
 ]
 
 #figure(caption: [ MinOWA regret par scénarios ])[
-  #plot-performance-scenario(data-minowa-regret)
+  #plot-performance-scenario(data-minowa-regret-project)
 ]
 
 #figure(caption: [ MaxOWA par projets ])[
-  #plot-performance-project(data-maxowa)
+  #plot-performance-project(data-maxowa-project)
 ]
 
 #figure(caption: [ MinOWA regret par projets ])[
-  #plot-performance-project(data-minowa-regret)
+  #plot-performance-project(data-minowa-regret-project)
 ]
 
 == Partie 3
@@ -489,4 +489,67 @@ L'implémentation de ce programme linéaire a été réalisée en Python(voir le
 #lorem(110)
 
 === 3.4
-#lorem(100)
+
+#let data-q34 = csv("data/q34.csv", row-type: dictionary)
+
+#let data-maxmin-path = data-q34.map(element => {
+  (
+    scenario: int(element.at("n_scenarios")),
+    project: int(element.at("n_nodes")),
+    value: float(element.at("maxmin_time")),
+  )
+})
+#let data-minmax-regret-path = data-q34.map(element => {
+  (
+    scenario: int(element.at("n_scenarios")),
+    project: int(element.at("n_nodes")),
+    value: float(element.at("minmax_regret_time")),
+  )
+})
+
+#let data-maxowa-path = data-q34.map(element => {
+  (
+    scenario: int(element.at("n_scenarios")),
+    project: int(element.at("n_nodes")),
+    value: float(element.at("maxowa_time")),
+  )
+})
+#let data-minowa-regret-path = data-q34.map(element => {
+  (
+    scenario: int(element.at("n_scenarios")),
+    project: int(element.at("n_nodes")),
+    value: float(element.at("minowa_regret_time")),
+  )
+})
+
+#figure(caption: [ Maxmin par scénarios ])[
+  #plot-performance-scenario(data-maxmin-path)
+]
+
+#figure(caption: [ Minmax regret par scénarios ])[
+  #plot-performance-scenario(data-minmax-regret-path)
+]
+
+#figure(caption: [ MaxOWA par scénarios ])[
+  #plot-performance-scenario(data-maxowa-path)
+]
+
+#figure(caption: [ MinOWA regret par scénarios ])[
+  #plot-performance-scenario(data-minowa-regret-path)
+]
+
+#figure(caption: [ Maxmin par projets ])[
+  #plot-performance-project(data-maxmin-path)
+]
+
+#figure(caption: [ Minmax regret par projets ])[
+  #plot-performance-project(data-minmax-regret-path)
+]
+
+#figure(caption: [ MaxOWA par projets ])[
+  #plot-performance-project(data-maxowa-path)
+]
+
+#figure(caption: [ MinOWA regret par projets ])[
+  #plot-performance-project(data-minowa-regret-path)
+]
