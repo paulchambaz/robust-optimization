@@ -6,7 +6,7 @@ import pulp as pl  # type:ignore
 def minmax_regret_project_selection(n, p, costs, utilities, B):
     optimals = []
     for i in range(n):
-        prob = pl.LpProblem("optimal_scenario_1", pl.LpMaximize)
+        prob = pl.LpProblem(f"optimal_scenario_{i}", pl.LpMaximize)
         x = [pl.LpVariable(f"x_{j}", cat=pl.LpBinary) for j in range(p)]
 
         prob += pl.lpSum(utilities[i][j] * x[j] for j in range(p))
