@@ -133,6 +133,8 @@
   oklch(40%, 40%, 270deg, 100%),
   oklch(35%, 40%, 270deg, 100%),
   oklch(30%, 40%, 270deg, 100%),
+  oklch(25%, 40%, 270deg, 100%),
+  oklch(20%, 40%, 270deg, 100%),
 )
 
 #let to-screen(value, min-val, max-val) = {
@@ -242,7 +244,7 @@
  
     for (project-idx, project-medians) in median-values.enumerate() {
       let project = projects.at(project-idx)
-      let color-idx = calc.floor((project - 10) / 5)
+      let color-idx = project-idx
       let color = plot-colors.at(color-idx)
       
       for point in project-medians {
@@ -264,7 +266,7 @@
 
     let legend-start = 0.5
     for (i, project) in projects.enumerate() {
-      let color-idx = calc.floor((project - 10) / 5)
+      let color-idx = i
       let color = plot-colors.at(color-idx)
       let y-pos = legend-start + (i * 0.06)
       circle((1.1, y-pos), radius: 0.01, stroke: none, fill: color)
@@ -340,7 +342,7 @@
  
     for (scenario-idx, scenario-medians) in median-values.enumerate() {
       let scenario = scenarios.at(scenario-idx)
-      let color-idx = calc.floor((scenario - 5) / 5)
+      let color-idx = scenario-idx
       let color = plot-colors.at(color-idx)
       
       for point in scenario-medians {
@@ -362,7 +364,7 @@
 
     let legend-start = 0.5
     for (i, scenario) in scenarios.enumerate() {
-      let color-idx = calc.floor((scenario - 5) / 5)
+      let color-idx = i
       let color = plot-colors.at(color-idx)
       let y-pos = legend-start + (i * 0.06)
       circle((1.1, y-pos), radius: 0.01, stroke: none, fill: color)

@@ -12,7 +12,7 @@ from q33 import (
 )
 
 ns = [2, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
-ps = [10, 15, 20, 25, 30, 35, 40, 45, 50]
+ps = [10, 15, 20, 40, 80, 120, 160, 200, 240]
 num_repetitions = 50
 
 with open("paper/data/q34.csv", "w", newline="") as csvfile:

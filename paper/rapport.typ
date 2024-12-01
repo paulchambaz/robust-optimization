@@ -480,7 +480,34 @@ L'implémentation de ce programme linéaire a été réalisée en Python(voir le
 == Partie 3
 
 === 3.1
-#lorem(120)
+On cherche à représenter le problème comme un problème linéaire.
+
+On déduit que la fonction objective que l'on va minimiser est la longeur du chemin.
+
+Il faut exprimer ce chemin de façon mathématique simple.
+
+On propose de représenter le graphe sous la forme d'une matrice d'adjacence.
+
+On choisi d'introduire les variables $x_(i j)$ qui représente si on prend ou non l'arc $(i, j)$ dans le chemin.
+
+Ainsi, on peut représenter la longeur du chemin, avec $p$ le nombre de nœuds dans le graphe, dans le scénario $s$ par
+
+$
+sum_(i=0)^n sum_(j=0)^n t_(i j)^s x_(i j)
+$
+
+Cela étant dit on a encore deux problèmes à résoudre.
+
+Tout d'abord, on est pas certain d'avoir un chemin valable, il faut, de la même façon que dans la première partie que $x in X$ avec $X$ l'ensemble des solutions admissible.
+
+On va transformer le problème en un problème de flot.
+
+Si on ajoute des capacités de 1 à chaque arc, alors dans un problème de flot, on ira sélectionner plusieurs chemins valables.
+
+Dans notre cas on veut un unique chemin, donc on va ajouter que l'on veut que le flot soit de valeur 1.
+
+On peut alors utiliser les formules des problèmes de flots pour modéliser nos contraintes.
+
 
 === 3.2
 #lorem(130)
