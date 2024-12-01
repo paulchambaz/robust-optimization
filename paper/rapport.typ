@@ -440,8 +440,8 @@ On note que cette solution est une fois encore la même que celle obtenue dans l
 
 === 2.6
 On s'intéresse maintenant à l'évolution des temps de résolution des deux critères (maxOWA et minOWA regret) en fonction du nombre de scénarios ($n={5, 10, 15, ..., 50}$) et du nombre de projets ($p={10, 15, 20, ..., 50}$). Pour évaluer systématiquement leurs performances respectives, nous générons pour chaque couple $(n,p)$ un ensemble de 50 instances aléatoires. Les coûts et utilités de chaque instance sont tirés uniformément dans l'intervalle $[1, 100]$, avec un budget fixé à $50%$ de la somme totale des coûts des projets.
-Les poids sont choisis dans l'intervalle $[1, n]$ puis trié pour pouvoir respecter la conditions de poids décroissants.
-Cette approche nous permet d'obtenir une distribution stastistiquement significative des temps de résolution pour différentes tailles de problèmes.
+Les poids sont choisis dans l'intervalle $[0, n]$ puis trié pour pouvoir respecter la conditions de poids décroissants.
+Cette approche nous permet d'obtenir une distribution statistiquement significative des temps de résolution pour différentes tailles de problèmes.
 
 L'implémentation de ce programme linéaire a été réalisée en Python(voir le fichier `src/q26.py`). La résolution nous fournit les résultats suivants.
 
@@ -477,36 +477,31 @@ L'implémentation de ce programme linéaire a été réalisée en Python(voir le
   #plot-performance-project(data-minowa-regret-project)
 ]
 
+Lors de l'analyse des figures, on remarque le ralentissement des temps de résolution. 
+On remarque également que les résolutions par projets semblent devenues linéaires alors qu'elles étaient en temps exponentionnel.
+Cela interpelle car ces problèmes restent des problèmes du sac-à-dos qui sont, comme dans la partie 1, NP complets.
+Donc on peut penser qu'il s'agit encore de courbes exponentielles mais qu'il nous manque des instances plus grandes pour l'observer rigoureusement (on le retrouve bien dans la partie 3).
+Concernant les résolutions par scénarios, les courbes seraient maintenant quadratiques du fait des tris des éléments des vecteurs nécessaires aux résolutions.
+
 == Partie 3
 
 === 3.1
-On cherche à représenter le problème comme un problème linéaire.
-
-On déduit que la fonction objective que l'on va minimiser est la longeur du chemin.
-
-Il faut exprimer ce chemin de façon mathématique simple.
-
-On propose de représenter le graphe sous la forme d'une matrice d'adjacence.
-
-On choisi d'introduire les variables $x_(i j)$ qui représente si on prend ou non l'arc $(i, j)$ dans le chemin.
-
+On cherche à représenter le problème de recherche du chemin le plus rapide entre les sommets initial et destination dans un graphe comme un problème linéaire.
+Dans ce programme linéaire, la fonction objective que l'on cherche à minimiser est la longueur du chemin.
+On propose de représenter le graphe sous la forme d'une matrice d'adjacence en introduisant les variables binaires $x_(i j)$ qui représente si on prend ou non l'arc $(i, j)$.
+L'ensemble des $x_(i j)=1$ ainsi que les sommets s et t forment le chemin recherché.
 Ainsi, on peut représenter la longeur du chemin, avec $p$ le nombre de nœuds dans le graphe, dans le scénario $s$ par
 
 $
 sum_(i=0)^n sum_(j=0)^n t_(i j)^s x_(i j)
 $
 
-Cela étant dit on a encore deux problèmes à résoudre.
-
-Tout d'abord, on est pas certain d'avoir un chemin valable, il faut, de la même façon que dans la première partie que $x in X$ avec $X$ l'ensemble des solutions admissible.
-
-On va transformer le problème en un problème de flot.
-
-Si on ajoute des capacités de 1 à chaque arc, alors dans un problème de flot, on ira sélectionner plusieurs chemins valables.
-
-Dans notre cas on veut un unique chemin, donc on va ajouter que l'on veut que le flot soit de valeur 1.
-
-On peut alors utiliser les formules des problèmes de flots pour modéliser nos contraintes.
+Afin de garantir un chemin empruntable, il faut impérativement que $x in X$ avec $X$ l'ensemble des solutions admissible.
+De plus, on transforme le problème en un problème de flot maximal.
+Si on ajoute des capacités de 1 à chaque arc, alors dans un problème de flot, on ira sélectionner plusieurs chemins valables. 
+Dans notre cas on veut un unique chemin, alors avec un flot de valeur 1. 
+On obtient ce flot en ajoutant des contraintes particulières qui sont, la somme des flots sortants de la source et la somme des flots entrants dans la destination sont chacune égale à 1. 
+Et pour chaque noeud, le flot entrant est égal au flot sortant.
 
 $
 sum_(i=0)^p x_(s i) = 1 \
@@ -526,29 +521,46 @@ s.c. cases(
 x_(i j) in {0, 1} quad forall i, j in {1, ..., p}
 $
 
+On remarque que la résolution informatique du programme de minimisation entraînerait des chemins inexistants comme résultats.
+Ceci vient du fait du choix d'une matrice d'adjacence qui représente les arcs inexistants par des valeurs nulles et que l'algorithme choisira par minimisation.
+On introduit donc dans l'implémentation du programme linéaire une valeur M fortement supérieure aux coûts des arcs afin de pénaliser les arcs inexistants.
+
 === 3.2
-On implémente en python...
+L'implémentation de ce programme linéaire a été réalisé en Python (voir le fichier `src/q32.py`). La résolution nous fournit les résultats suivants.
+La pénalisation choisie précédemment s'avère utile car comme prévu la minimisation favorise les arcs inexistants.
+
+#figure(caption:[Instance gauche, scénario 1])[
+Matrice $x^*$: $$ \
+Arcs sélectionnés : ${(a,b), (b,d), (d,f)}$ \
+Valeur optimale: $g(x^*) = 8$ \
+]
+
+#figure(caption:[Instance gauche, scénario 2])[
+Matrice $x^*$: $$ \
+Arcs sélectionnés : ${('a', 'c'), ('c', 'd'), ('d', 'f')}$ \
+Valeur optimale: $g(x^*) = 4$ \
+]
+
+#figure(caption:[Instance droite, scénario 1])[
+Matrice $x^*$: $$ \
+Arcs sélectionnés : ${('a', 'd'), ('d', 'c'), ('c', 'f'), ('f', 'g')}$ \
+Valeur optimale: $g(x^*) = 5$ \
+]
+
+#figure(caption:[Instance droite, scénario 2])[
+Matrice $x^*$: $$ \
+Arcs sélectionnés : ${('a', 'c'), ('c', 'e'), ('e', 'g')}$ \
+Valeur optimale: $g(x^*) = 6$ \
+]
 
 // Left graph in scenario 1
-// Status: Optimal
 // Vector x*: [[0, 1, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]]
-// Selected arcs: [('a', 'b'), ('b', 'd'), ('d', 'f')]
-// Optimal value g(x*): 8
 // Left graph in scenario 2
-// Status: Optimal
 // Vector x*: [[0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]]
-// Selected arcs: [('a', 'c'), ('c', 'd'), ('d', 'f')]
-// Optimal value g(x*): 4
 // Left graph in scenario 1
-// Status: Optimal
 // Vector x*: [[0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0], [0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0, 0]]
-// Selected arcs: [('d', 'c'), ('a', 'd'), ('c', 'f'), ('f', 'g')]
-// Optimal value g(x*): 5
 // Left graph in scenario 2
-// Status: Optimal
 // Vector x*: [[0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0]]
-// Selected arcs: [('a', 'c'), ('c', 'e'), ('e', 'g')]
-// Optimal value g(x*): 6
 
 === 3.3
 On remarque que le problème initial, dans un scénario, de la partie 1 peut être modélisé par :
@@ -558,7 +570,7 @@ max z_s (x) \
 s.c. cases(x in X)
 $
 
-Une fois le problème décrit comme tel, les quatres critères peuvent être écrit de la façon suivante:
+Une fois le problème décrit comme tel, les quatre critères peuvent être écrit de la façon suivante:
 
 La dimension du vecteur $x$ dépend du problème, dans le problème des projets, c'était un vecteur à une dimension, ici c'est deux dimensions.
 
@@ -574,8 +586,6 @@ La dimension du vecteur $x$ dépend du problème, dans le problème des projets,
   $
 ]
 
-#lorem(20)
-
 #figure(caption: [Minmax regret])[
   $
   min beta \
@@ -588,7 +598,7 @@ La dimension du vecteur $x$ dépend du problème, dans le problème des projets,
   $
 ]
 
-#lorem(20)
+On remarque que ces programmes linéaires implémentent bien les fonctions maxmin et minmax regret de façon concises.
 
 #figure(caption: [Maxowa])[
   $
@@ -603,8 +613,6 @@ La dimension du vecteur $x$ dépend du problème, dans le problème des projets,
   $
 ]
 
-#lorem(20)
-
 #figure(caption: [Minowa regret])[
   $
   min sum_(k=1)^n w'_k (k r_k + sum_(s=1)^n b_(s k)) \
@@ -618,10 +626,11 @@ La dimension du vecteur $x$ dépend du problème, dans le problème des projets,
   $
 ]
 
-#lorem(100)
+Malgré des fonctions plus complexes, la reformulation reste concise et on remarque donc bien que calculer un chemin robuste est adaptable à toute fonction.
+C'est pourquoi on choisit de réécrire le problème précédent de la façon suivante :
 
 $
-z_s (x) = -sum_(i=0)^n sum_(j=0)^n t_(i j)^s x_(i j) \
+max z_s (x) = -sum_(i=0)^n sum_(j=0)^n t_(i j)^s x_(i j) \
 s.c. cases(
   sum_(i=0)^p x_(s i) = 1,
   sum_(i=0)^p x_(i t) = 1,
@@ -629,6 +638,8 @@ s.c. cases(
 ) \
 x_(i j) in {0, 1} quad forall i, j in {1, ..., p}
 $
+
+Et on l'applique aux quatre critères.
 
 #figure(caption: [Maxmin des chemins])[
   $
@@ -644,8 +655,6 @@ $
   $
 ]
 
-#lorem(20)
-
 #figure(caption: [Minmax regret des chemins])[
   $
   min beta \
@@ -659,8 +668,6 @@ $
   beta in RR
   $
 ]
-
-#lorem(20)
 
 #figure(caption: [Maxowa des chemins])[
   $
@@ -677,8 +684,6 @@ $
   $
 ]
 
-#lorem(20)
-
 #figure(caption: [Minowa regret des chemins])[
   $
   min sum_(k=1)^n w'_k (k r_k + sum_(s=1)^n b_(s k)) \
@@ -694,39 +699,127 @@ $
   $
 ]
 
+#figure(caption:[Instance gauche, Maxmin])[
+Matrice $x^*$: $$ \
+Arcs sélectionnés : ${('a', 'b'), ('b', 'd'), ('d', 'f')}$ \
+Vecteur $z(x^*)=(-8,-9)$ \
+Valeur optimale: $g(x^*) = -9$ \
+]
+
+#figure(caption:[Instance gauche, Minmax regret])[
+Matrice $x^*$: $$ \
+Arcs sélectionnés : ${('a', 'b'), ('b', 'e'), ('e', 'f')}$ \
+Vecteur $z(x^*)=(3,3)$ \
+Valeur optimale: $g(x^*) = 3$ \
+]
+
+#figure(caption:[Instance gauche, MaxOWA avec une pondération de (2,1)])[
+Matrice $x^*$: $$ \
+Arcs sélectionnés : ${('a', 'b'), ('b', 'd'), ('d', 'f')}$ \
+Vecteur $z(x^*)=(-8,-9)$ \
+Valeur optimale: $g(x^*) = -26$ \
+]
+
+#figure(caption:[Instance gauche, MinOWA regret avec une pondération de (2,1)])[
+Matrice $x^*$: $$ \
+Arcs sélectionnés : ${('a', 'b'), ('b', 'e'), ('e', 'f')}$ \
+Vecteur $z(x^*)=(3,3)$ \
+Valeur optimale: $g(x^*) = 9$ \
+]
+
+#figure(caption:[Instance gauche, MaxOWA avec une pondération de (4,1)])[
+Matrice $x^*$: $$ \
+Arcs sélectionnés : ${('a', 'b'), ('b', 'd'), ('d', 'f')}$ \
+Vecteur $z(x^*)=(-8,-9)$ \
+Valeur optimale: $g(x^*) = -44$ \
+]
+
+#figure(caption:[Instance gauche, MinOWA regret avec une pondération de (4,1)])[
+Matrice $x^*$: $$ \
+Arcs sélectionnés : ${('a', 'b'), ('b', 'e'), ('e', 'f')}$ \
+Vecteur $z(x^*)=(3,3)$ \
+Valeur optimale: $g(x^*) = 15$ \
+]
+
+#figure(caption:[Instance gauche, MaxOWA avec une pondération de (8,1)])[
+Matrice $x^*$: $$ \
+Arcs sélectionnés : ${('a', 'b'), ('b', 'd'), ('d', 'f')}$ \
+Vecteur $z(x^*)=(-8,-9)$ \
+Valeur optimale: $g(x^*) = -80$ \
+]
+
+#figure(caption:[Instance gauche, MinOWA regret avec une pondération de (8,1)])[
+Matrice $x^*$: $$ \
+Arcs sélectionnés : ${('a', 'b'), ('b', 'e'), ('e', 'f')}$ \
+Vecteur $z(x^*)=(3,3)$ \
+Valeur optimale: $g(x^*) = 27$ \
+]
+
+#figure(caption:[Instance gauche, MaxOWA avec une pondération de (16,1)])[
+Matrice $x^*$: $$ \
+Arcs sélectionnés : ${('a', 'b'), ('b', 'd'), ('d', 'f')}$ \
+Vecteur $z(x^*)=(-8,-9)$ \
+Valeur optimale: $g(x^*) = -152$ \
+]
+
+#figure(caption:[Instance gauche, MinOWA regret avec une pondération de (16,1)])[
+Matrice $x^*$: $$ \
+Arcs sélectionnés : ${('a', 'b'), ('b', 'e'), ('e', 'f')}$ \
+Vecteur $z(x^*)=(3,3)$ \
+Valeur optimale: $g(x^*) = 51$ \
+]
+
 // Left graph
 //
 // Maxmin
-// Status: Optimal
 // Vector x*: [[0, 1, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]]
-// Selected arcs: [('a', 'b'), ('b', 'd'), ('d', 'f')]
-// Vector z(x*) = (-8, -9)
-// Optimal value g(x*): -9
 //
 // Minmax regret
-// Status: Optimal
 // Vector x*: [[0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0]]
-// Selected arcs: [('a', 'b'), ('b', 'e'), ('e', 'f')]
-// Vector z(x*) = (3, 3)
-// Optimal value g(x*): 3
-// Optimals s* = (-8, -4)
 //
-// Maxowa
-// Status: Optimal
-// Vector x*: [[0, 1, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]]
-// Selected arcs: [('a', 'b'), ('b', 'd'), ('d', 'f')]
-// Vector z(x*) = (-8, -9)
-// Optimal value g(x*): -26
+// Weights: (2, 1)
 //
-// Minowa regret
-// Status: Optimal
-// Vector x*: [[0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0]]
-// Selected arcs: [('a', 'b'), ('b', 'e'), ('e', 'f')]
-// Vector z(x*) = (3, 3)
-// Optimal value g(x*): 9
-// Optimals s* = (-8, -4)
+//Maxowa
+//Vector x*: [[0, 1, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]]
+//
+//Minowa regret
+//Vector x*: [[0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0]]
+//
+//Weights: (4, 1)
+//
+//Maxowa
+//Vector x*: [[0, 1, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]]
+//
+//Minowa regret
+//Vector x*: [[0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0]]
+//
+//Weights: (8, 1)
+//
+//Maxowa
+//Vector x*: [[0, 1, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]]
+//
+//Minowa regret
+//Vector x*: [[0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0]]
+//
+//Weights: (16, 1)
+//
+//Maxowa
+//Vector x*: [[0, 1, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]]
+//
+//Minowa regret
+//Vector x*: [[0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0]]
+
+On remarque que plus k est grand, plus les résultats de MaxOWA et de MinOWA regret convergent vers les résultats de Maxmin et de Minmax regret.
 
 === 3.4
+On s'intéresse finalement à l'évolution des temps de résolution de tous les critères reformulés en fonction du nombre de scénarios ($n={2,5,10,...,50}$) et du nombre de projets ($p={10,15,20,40,80,120,160,200,240}$).
+Pour évaluer systématiquement leurs performances respectives, on génère pour chaque couple (n,p) un ensemble de 50 instances aléatoires.
+On commence par engendrer une matrice de coûts initialisée à 0, un vecteur de coordonnées aléatoires.
+Ensuite, on mélange les coordonnées et on en tire un au hasard (l'implémentation engendre l'impossibilité de choisir pour un sommet, un arc menant à lui-même) afin de garantir les 30 à 50% de densité.
+Pour chaque arc, son coût aléatoire est ajouté à la matrice avant de choisir aléatoirement le noeud source et le noeud destination.
+Le vecteur de pondération est composé de valeurs tirées aléatoirement entre 0 et n puis classées par ordre croissant.
+
+L'implémentation de ce programme linéaire a été réalisée en Python à l'aide de la librairie `pulp` et du solveur `gurobi` (voir le fichier `src/q34.py`). La résolution nous fournit les résultats suivants.
 
 #let data-q34 = csv("data/q34.csv", row-type: dictionary)
 
@@ -791,3 +884,15 @@ $
 #figure(caption: [ MinOWA regret par nœuds ])[
   #plot-performance-project(data-minowa-regret-path)
 ]
+
+La variation du nombre de noeuds allant jusqu'à 240 confirme bien l'exponentialité de la courbe comme théorisée dans la partie 2.
+L'aspect certes linéaire des courbes de cette partie sont donc bien un zoom sur des courbes exponentielles.
+Cependant, nous savons que l'algorithme de recherche d'un plus court chemin comme celui de Dijkstra n'est pas en complexité exponentielle.
+On en conclut donc qu'un tirage plus approfondi permettrait de vérifier si cette apparent exponentialité ne serait pas une courbe réellement quadratique.
+
+=== Ouverture
+
+Ce projet apporte une généralisation théorique de problèmes de minimisation ou de maximisation à l'inverse.
+Cependant des applications industrielles pratiques et directes de cette approche nous sont venues à l'esprit.
+Par exemple, un système GPS prévisionnel avec une prise en compte d'aléas tels que la météo ou la circulation en temps réelle.
+De plus, avec le problème du voyageur mis sous forme d'un programme linéaire, il pourrait être intéressant d'essayer d'appliquer une méthodologie semblable à celle découverte par ce projet.
