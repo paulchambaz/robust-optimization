@@ -244,48 +244,50 @@ print(f"Vector z(x*) = {tuple(z)}")
 print(f"Optimal value g(x*): {optimal}")
 print(f"Optimals s* = {tuple(optimals)}")
 
-w = [2, 1]
+for k in [2, 4, 8, 16]:
+    w = [k, 1]
+    print(f"\nWeights: {tuple(w)}\n")
 
-status, solution, optimal = maxowa_path_selection(0, p - 1, costs, n, p, w)
+    status, solution, optimal = maxowa_path_selection(0, p - 1, costs, n, p, w)
 
-selected_arcs = [
-    (chr(ord("a") + i), chr(ord("a") + j))
-    for j in range(p)
-    for i in range(p)
-    if solution[i][j] == 1
-]
-z = [
-    -sum(costs[s][i][j] * solution[i][j] for j in range(p) for i in range(p))
-    for s in range(n)
-]
+    selected_arcs = [
+        (chr(ord("a") + i), chr(ord("a") + j))
+        for j in range(p)
+        for i in range(p)
+        if solution[i][j] == 1
+    ]
+    z = [
+        -sum(costs[s][i][j] * solution[i][j] for j in range(p) for i in range(p))
+        for s in range(n)
+    ]
 
-print("\nMaxowa")
-print(f"Status: {status}")
-print(f"Vector x*: {solution}")
-print(f"Selected arcs: {selected_arcs}")
-print(f"Vector z(x*) = {tuple(z)}")
-print(f"Optimal value g(x*): {optimal}")
+    print("\nMaxowa")
+    print(f"Status: {status}")
+    print(f"Vector x*: {solution}")
+    print(f"Selected arcs: {selected_arcs}")
+    print(f"Vector z(x*) = {tuple(z)}")
+    print(f"Optimal value g(x*): {optimal}")
 
-status, solution, optimal, optimals = minowa_regret_path_selection(
-    0, p - 1, costs, n, p, w
-)
+    status, solution, optimal, optimals = minowa_regret_path_selection(
+        0, p - 1, costs, n, p, w
+    )
 
-selected_arcs = [
-    (chr(ord("a") + i), chr(ord("a") + j))
-    for j in range(p)
-    for i in range(p)
-    if solution[i][j] == 1
-]
-z = [
-    optimals[s]
-    + sum(costs[s][i][j] * solution[i][j] for j in range(p) for i in range(p))
-    for s in range(n)
-]
+    selected_arcs = [
+        (chr(ord("a") + i), chr(ord("a") + j))
+        for j in range(p)
+        for i in range(p)
+        if solution[i][j] == 1
+    ]
+    z = [
+        optimals[s]
+        + sum(costs[s][i][j] * solution[i][j] for j in range(p) for i in range(p))
+        for s in range(n)
+    ]
 
-print("\nMinowa regret")
-print(f"Status: {status}")
-print(f"Vector x*: {solution}")
-print(f"Selected arcs: {selected_arcs}")
-print(f"Vector z(x*) = {tuple(z)}")
-print(f"Optimal value g(x*): {optimal}")
-print(f"Optimals s* = {tuple(optimals)}")
+    print("\nMinowa regret")
+    print(f"Status: {status}")
+    print(f"Vector x*: {solution}")
+    print(f"Selected arcs: {selected_arcs}")
+    print(f"Vector z(x*) = {tuple(z)}")
+    print(f"Optimal value g(x*): {optimal}")
+    print(f"Optimals s* = {tuple(optimals)}")
