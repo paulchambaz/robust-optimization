@@ -508,12 +508,223 @@ Dans notre cas on veut un unique chemin, donc on va ajouter que l'on veut que le
 
 On peut alors utiliser les formules des problèmes de flots pour modéliser nos contraintes.
 
+$
+sum_(i=0)^p x_(s i) = 1 \
+sum_(i=0)^p x_(i t) = 1 \
+sum_(i=0)^p x_(i v) - x_(v i) = 0 quad forall v eq.not s "et" v eq.not t
+$
+
+Cela nous donne le programme linéaire suivant :
+
+$
+min sum_(i=0)^n sum_(j=0)^n t_(i j)^s x_(i j) \
+s.c. cases(
+  sum_(i=0)^p x_(s i) = 1,
+  sum_(i=0)^p x_(i t) = 1,
+  sum_(i=0)^p x_(i v) - x_(v i) = 0 quad forall v eq.not s "et" v eq.not t
+) \
+x_(i j) in {0, 1} quad forall i, j in {1, ..., p}
+$
 
 === 3.2
-#lorem(130)
+On implémente en python...
+
+// Left graph in scenario 1
+// Status: Optimal
+// Vector x*: [[0, 1, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]]
+// Selected arcs: [('a', 'b'), ('b', 'd'), ('d', 'f')]
+// Optimal value g(x*): 8
+// Left graph in scenario 2
+// Status: Optimal
+// Vector x*: [[0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]]
+// Selected arcs: [('a', 'c'), ('c', 'd'), ('d', 'f')]
+// Optimal value g(x*): 4
+// Left graph in scenario 1
+// Status: Optimal
+// Vector x*: [[0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0], [0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0, 0]]
+// Selected arcs: [('d', 'c'), ('a', 'd'), ('c', 'f'), ('f', 'g')]
+// Optimal value g(x*): 5
+// Left graph in scenario 2
+// Status: Optimal
+// Vector x*: [[0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0]]
+// Selected arcs: [('a', 'c'), ('c', 'e'), ('e', 'g')]
+// Optimal value g(x*): 6
 
 === 3.3
-#lorem(110)
+On remarque que le problème initial, dans un scénario, de la partie 1 peut être modélisé par :
+
+$
+max z_s (x) \
+s.c. cases(x in X)
+$
+
+Une fois le problème décrit comme tel, les quatres critères peuvent être écrit de la façon suivante:
+
+La dimension du vecteur $x$ dépend du problème, dans le problème des projets, c'était un vecteur à une dimension, ici c'est deux dimensions.
+
+#figure(caption: [Maxmin])[
+  $
+  max alpha \
+  s.c cases(
+    alpha <= z_s (x) quad forall s in {1\, ...\, n},
+    x in X
+  ) \
+  x in {0,1} \
+  alpha in RR
+  $
+]
+
+#lorem(20)
+
+#figure(caption: [Minmax regret])[
+  $
+  min beta \
+  s.c cases(
+    beta >= z_s^* - z_s (x) quad forall s in {1\, ...\, n},
+    x in X
+  ) \
+  x in {0,1} \
+  beta in RR
+  $
+]
+
+#lorem(20)
+
+#figure(caption: [Maxowa])[
+  $
+  max sum_(k=1)^n w'_k (k r_k - sum_(s=1)^n b_(s k)) \
+  s.c cases(
+    r_k - b_(s k) <= z_s (x) quad forall s in {1\, ...\, n},
+    x in X
+  ) \
+  x in {0,1} \
+  b_(s k) >= 0 quad forall s,k in {1, ..., n} \
+  r_k in RR quad forall k in {1, ..., n}
+  $
+]
+
+#lorem(20)
+
+#figure(caption: [Minowa regret])[
+  $
+  min sum_(k=1)^n w'_k (k r_k + sum_(s=1)^n b_(s k)) \
+  s.c cases(
+    r_k - b_(s k) >= z_s^* - z_s (x) quad forall s in {1\, ...\, n},
+    x in X
+  ) \
+  x in {0,1} \
+  b_(s k) >= 0 quad forall s,k in {1, ..., n} \
+  r_k in RR quad forall k in {1, ..., n}
+  $
+]
+
+#lorem(100)
+
+$
+z_s (x) = -sum_(i=0)^n sum_(j=0)^n t_(i j)^s x_(i j) \
+s.c. cases(
+  sum_(i=0)^p x_(s i) = 1,
+  sum_(i=0)^p x_(i t) = 1,
+  sum_(i=0)^p x_(i v) - x_(v i) = 0 quad forall v eq.not s "et" v eq.not t
+) \
+x_(i j) in {0, 1} quad forall i, j in {1, ..., p}
+$
+
+#figure(caption: [Maxmin des chemins])[
+  $
+  max alpha \
+  s.c cases(
+    alpha <= -sum_(i=0)^n sum_(j=0)^n t_(i j)^s x_(i j) quad forall s in {1\, ...\, n},
+  sum_(i=0)^p x_(s i) = 1,
+  sum_(i=0)^p x_(i t) = 1,
+  sum_(i=0)^p x_(i v) - x_(v i) = 0 quad forall v eq.not s "et" v eq.not t
+  ) \
+  x_(i j) in {0, 1} quad forall i, j in {1, ..., p} \
+  alpha in RR
+  $
+]
+
+#lorem(20)
+
+#figure(caption: [Minmax regret des chemins])[
+  $
+  min beta \
+  s.c cases(
+    beta >= z_s^* + sum_(i=0)^n sum_(j=0)^n t_(i j)^s x_(i j) quad forall s in {1\, ...\, n},
+  sum_(i=0)^p x_(s i) = 1,
+  sum_(i=0)^p x_(i t) = 1,
+  sum_(i=0)^p x_(i v) - x_(v i) = 0 quad forall v eq.not s "et" v eq.not t
+  ) \
+  x_(i j) in {0, 1} quad forall i, j in {1, ..., p} \
+  beta in RR
+  $
+]
+
+#lorem(20)
+
+#figure(caption: [Maxowa des chemins])[
+  $
+  max sum_(k=1)^n w'_k (k r_k - sum_(s=1)^n b_(s k)) \
+  s.c cases(
+    r_k - b_(s k) <= -sum_(i=0)^n sum_(j=0)^n t_(i j)^s x_(i j) quad forall s in {1\, ...\, n},
+  sum_(i=0)^p x_(s i) = 1,
+  sum_(i=0)^p x_(i t) = 1,
+  sum_(i=0)^p x_(i v) - x_(v i) = 0 quad forall v eq.not s "et" v eq.not t
+  ) \
+  x_(i j) in {0, 1} quad forall i, j in {1, ..., p} \
+  b_(s k) >= 0 quad forall s,k in {1, ..., n} \
+  r_k in RR quad forall k in {1, ..., n}
+  $
+]
+
+#lorem(20)
+
+#figure(caption: [Minowa regret des chemins])[
+  $
+  min sum_(k=1)^n w'_k (k r_k + sum_(s=1)^n b_(s k)) \
+  s.c cases(
+    r_k - b_(s k) >= z_s^* + sum_(i=0)^n sum_(j=0)^n t_(i j)^s x_(i j) quad forall s in {1\, ...\, n},
+  sum_(i=0)^p x_(s i) = 1,
+  sum_(i=0)^p x_(i t) = 1,
+  sum_(i=0)^p x_(i v) - x_(v i) = 0 quad forall v eq.not s "et" v eq.not t
+  ) \
+  x_(i j) in {0, 1} quad forall i, j in {1, ..., p} \
+  b_(s k) >= 0 quad forall s,k in {1, ..., n} \
+  r_k in RR quad forall k in {1, ..., n}
+  $
+]
+
+// Left graph
+//
+// Maxmin
+// Status: Optimal
+// Vector x*: [[0, 1, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]]
+// Selected arcs: [('a', 'b'), ('b', 'd'), ('d', 'f')]
+// Vector z(x*) = (-8, -9)
+// Optimal value g(x*): -9
+//
+// Minmax regret
+// Status: Optimal
+// Vector x*: [[0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0]]
+// Selected arcs: [('a', 'b'), ('b', 'e'), ('e', 'f')]
+// Vector z(x*) = (3, 3)
+// Optimal value g(x*): 3
+// Optimals s* = (-8, -4)
+//
+// Maxowa
+// Status: Optimal
+// Vector x*: [[0, 1, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0]]
+// Selected arcs: [('a', 'b'), ('b', 'd'), ('d', 'f')]
+// Vector z(x*) = (-8, -9)
+// Optimal value g(x*): -26
+//
+// Minowa regret
+// Status: Optimal
+// Vector x*: [[0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0]]
+// Selected arcs: [('a', 'b'), ('b', 'e'), ('e', 'f')]
+// Vector z(x*) = (3, 3)
+// Optimal value g(x*): 9
+// Optimals s* = (-8, -4)
 
 === 3.4
 
