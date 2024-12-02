@@ -40,7 +40,7 @@ $
 X = {x in {0,1}^p : sum_(j=1)^p c_j x_j <= B}
 $
 
-Pour obtenir un programme linéaire en variables mixtes, nous introduisons une variable $alpha$ représentant le minimum des utilités. Le problème se reformule alors :
+Pour obtenir un programme linéaire en variables mixtes, on introduit une variable $alpha$ représentant le minimum des utilités. Le problème se reformule alors :
 $
 max alpha \
 s.c. cases(
@@ -64,7 +64,7 @@ La solution optimale $x^*$ est un vecteur binaire où seuls les projets 2, 3, 4,
 
 Il est intéressant de noter que cette solution atteint exactement la même utilité dans les deux scénarios ($z_1(x^*) = z_2(x^*) = 66$), ce qui suggère un bon équilibre entre les deux scénarios.
 
-Il est intéressant de noter que l'utilisation d'autres solveurs nous conduit à une solution alternative :
+Il est intéressant de noter que l'utilisation d'autres solveurs conduit à une solution alternative :
 
 #figure[
   Vecteur $x^* : (0, 0, 1, 1, 1, 1, 1, 1, 0, 0)$ \
@@ -486,7 +486,7 @@ On remarque également que les résolutions par projets semblent être devenues 
 == Partie 3
 
 === 3.1
-On cherche à représenter le problème de recherche du chemin le plus rapide entre les sommets source et destination dans un graphe comme un problème linéaire. Dans ce programme linéaire, la fonction objective que l'on cherche à minimiser est la longueur du chemin. On propose de représenter le graphe sous la forme d'une matrice d'adjacence en introduisant les variables binaires $x_(i j)$ qui représente si on prend ou non l'arc $(i, j)$. L'ensemble des $x_(i j)=1$ ainsi que les sommets $s$ et $t$ peuvent alors former un chemin. Ainsi, on peut représenter la longueur de ce chemin, avec $s$ le scénario et $p$ le nombre de nœuds présents dans le graphe par :
+On cherche à représenter le problème de recherche du chemin le plus rapide entre les sommets source et destination dans un graphe comme un problème linéaire. Dans ce programme linéaire, la fonction objective que l'on cherche à minimiser est la longueur du chemin. On propose de représenter le graphe sous la forme d'une matrice d'adjacence, en introduisant les variables binaires $x_(i j)$ qui représentent si on prend ou non l'arc $(i, j)$. L'ensemble des $x_(i j)=1$ ainsi que les sommets $s$ et $t$ peuvent alors former un chemin. On peut représenter la longueur de ce chemin, avec $s$ le scénario et $p$ le nombre de nœuds présents dans le graphe par :
 
 $
 sum_(i=0)^n sum_(j=0)^n t_(i j)^s x_(i j)
@@ -495,9 +495,9 @@ $
 Soit $X$ l'ensemble des solutions admissibles, nous devons alors ajouter la contrainte $x in X$, c'est à dire que les $x_(i j)=1$, c'est à dire les arcs effectivement sélectionnés, doivent représenter un chemin effectivement existant dans le graphe.
 Pour trouver des contraintes linéaires qui modélisent correctement ce besoin, on transforme le problème en un problème de flot maximal.
 En particulier, on réfléchit à ce que l'ajout de capacité de 1 à tous les arcs existants permet. Si la source a un flot entrant, et la destination un flot sortant infini, alors de nœuds à nœuds, le flot va se propager dans différents chemins.
-Dans notre cas, on cherche cependant un unique chemin, pour ce faire, on peut fixer le flot entrant dans la source et le flot sortant de la source à 1. Le flot va alors partir de la source et se propager dans graphe jusqu'à atteindre la destination (si c'est possible). Les arcs dont les flots est 1 vont alors correspondre à un chemin dans le graphe.
-Du fait, par analogie au problème de flot, on arrive au fait que nos $x_(i j)$ peuvent aussi être vu comme la valeurs des flots dans le graphe.
-De plus, le problème des flots se modélise avec les contraintes linéaires suivantes. On veut tout d'abord que la somme des flots sortants de la source et la somme des flots entrants dans la destination valent $1$. De plus, on souhaite avoir la contrainte de conservation de flot, c'est à dire que pour tout nœud, la somme de ses flots entrant soit égale à la somme de ses flots sortants.
+Dans notre cas, on cherche cependant un unique chemin, pour ce faire, on peut fixer le flot entrant dans la source et le flot sortant de la source à 1. Le flot va alors partir de la source et se propager dans le graphe jusqu'à atteindre la destination (si c'est possible). Les arcs dont les flots est 1 vont alors correspondre à un chemin dans le graphe.
+Du fait, par analogie au problème de flot, on arrive au fait que les $x_(i j)$ peuvent aussi être vus comme la valeur des flots dans le graphe.
+De plus, le problème de flots se modélise avec les contraintes linéaires suivantes. On veut tout d'abord que la somme des flots sortants de la source et la somme des flots entrants dans la destination valent $1$. De plus, on souhaite avoir la contrainte de conservation de flot, c'est à dire que pour tout nœud, la somme de ses flots entrant soit égale à la somme de ses flots sortants.
 
 $
 sum_(i=0)^p x_(s i) = 1 \
@@ -520,8 +520,8 @@ s.c. cases(
 x_(i j) in {0, 1} quad forall i, j in {1, ..., p}
 $
 
-Un point final sur lequel il nous faut commenter est la structure de la matrice d'adjacence. Il est commun de représenter, dans les matrices d'adjacences, les arcs inexistants par des 0. Réfléchissons à l'impact de cette décision sur ce programme linéaire ci-dessus. Si l'on cherche à minimiser, alors pour prendre un exemple minimal simple, s'il n'y a pas d'arc entre la source et la destination, alors la solution qui contient uniquement $x_(s t) = 1$ et $x_(i j) = 0 forall i eq.not s, j eq.not t$ est bien une solution admissible, dans le sens où tous les critères du programme linéaire sont respectés et la valeur de sa fonction objective est $0$.
-Le programme linéaire peut donc renvoyer au moins cette solution, alors que, puisqu'un arc n'existe pas entre ces deux points, cela ne devrait pas être le cas. On pourrai rajouter une autre contrainte, mais une autre solution simple est d'introduire un pré traitement à la matrice d'adjacence. Soit $M$ grand, si on remplace toutes les valeurs $0$ dans la matrice, c'est à dire les arcs inexistants, par $M$, alors dans le précédent scénario, la valeur de la fonction objective sera $M$. Si $M$ est effectivement supérieure à la longueur du plus court chemin, alors le programme linéaire trouvera une meilleure solution. On introduit donc ce pré traitement à la matrice avant le programme linéaire afin de pénaliser les arcs inexistants.
+Un point final sur lequel il nous faut commenter est la structure de la matrice d'adjacence. Il est commun de représenter, dans les matrices d'adjacences, les arcs inexistants par des 0. Réfléchissons à l'impact de cette décision sur le programme linéaire ci-dessus. Si l'on cherche à minimiser, alors pour prendre un exemple minimal simple. S'il n'y a pas d'arc entre la source et la destination, alors la solution qui contient uniquement $x_(s t) = 1$ et $x_(i j) = 0 forall i eq.not s, j eq.not t$ est bien une solution admissible, dans le sens où tous les critères du programme linéaire sont respectés, et la valeur de sa fonction objective est $0$.
+Le programme linéaire peut donc renvoyer au moins cette solution, alors que, puisqu'un arc n'existe pas entre ces deux points, cela ne devrait pas être le cas. On pourrait rajouter une autre contrainte, mais une autre solution plus simple est d'introduire un pré traitement à la matrice d'adjacence. Soit $M$ grand, si on remplace toutes les valeurs $0$ dans la matrice, c'est à dire les arcs inexistants, par $M$, alors dans le précédent scénario, la valeur de la fonction objective sera $M$. Si $M$ est effectivement supérieure à la longueur du plus court chemin, alors le programme linéaire trouvera une meilleure solution. On introduit donc ce pré traitement à la matrice avant le programme linéaire afin de pénaliser les arcs inexistants.
 
 === 3.2
 L'implémentation de ce programme linéaire a été réalisé en Python (voir le fichier `src/q32.py`). La résolution nous fournit les résultats suivants.
@@ -555,7 +555,7 @@ On observe bien qu'en pratique, la pénalisation choisie précédemment s'avère
   Valeur optimale: $g(x^*) = 6$ \
 ]
 
-On a donné ici les valeurs des matrices $x^*$, cependant, par soucis de simplicité visuelle, on ne présentera, dans le reste de ce rapport, que l'ensemble des arcs sélectionnés. La valeur de la matrice peut être obtenue directement par l'exécution du programme.
+On a donné ici les valeurs des matrices $x^*$, cependant, par souci de simplicité visuelle, on ne présentera, dans le reste de ce rapport, que l'ensemble des arcs sélectionnés. La valeur de la matrice peut être obtenue directement par l'exécution du programme.
 
 === 3.3
 On cherche à généraliser les observations que l'on a fait en partie 1 et 2 pour l'appliquer à la partie 3 sur ce nouveau problème. En fait, le problème de la partie 1 dans un scénario $s$ donné, peut-être décrit de la façon minimale suivante.
@@ -565,7 +565,7 @@ max z_s (x) quad & <=> quad max sum_(i=0)^p s_i^s x_i \
 s.c. cases(x in X) quad & <=> quad s.c. cases(sum_(i=0)^p c_i x_i)
 $
 
-Cette description est minimale, mais les quatre critères que l'on a vu, ne dépendent pas de l'implémentation spécifique de la fonction objective et des contraintes d'admissibilité.
+Cette description est minimale, mais les quatre critères que l'on a vus ne dépendent pas de l'implémentation spécifique de la fonction objective et des contraintes d'admissibilité.
 
 On a tout d'abord maxmin et minmax regret, pour lesquels on a simplement à introduire une nouvelle variable et ajouter une contrainte qui utilise la fonction objective et les optimaux dans le cas de minmax regret.
 
@@ -591,7 +591,7 @@ x in {0,1}^p \
 beta in RR
 $
 
-Pour les critères maxOWA et minOWA regret, la description des programmes est plus longue, mais une fois de plus on n'utilise que la fonction objective et les contraintes d'admissibilité. De plus, dans la partie 2, nous n'avons pas utilisé directement la structure du problème de #smallcaps[SacÀDos] directement, donc les preuves que nous avons donné sont toujours vraies peut importe le détail du problème. De façon plus générale, si un problème peut être modélisé par un programme linéaire de maximisation avec des variables binaires, dans un scénario, alors on peut utiliser ces formulations génériques pour orienter une prise de décision dans l'incertain complet sur les critères.
+Pour les critères maxOWA et minOWA regret, la description des programmes est plus longue, mais une fois de plus on n'utilise que la fonction objective et les contraintes d'admissibilité. De plus, dans la partie 2, nous n'avons pas utilisé la structure du problème de #smallcaps[SacÀDos] directement, donc les preuves que nous avons données sont toujours vraies peu importe le détail du problème. De façon plus générale, si un problème peut être modélisé par un programme linéaire de maximisation avec des variables binaires, dans un scénario, alors on peut utiliser ces formulations génériques pour orienter une prise de décision dans l'incertain complet sur les critères.
 
 $
 max sum_(k=1)^n w'_k (k r_k - sum_(s=1)^n b_(s k)) \
@@ -617,7 +617,7 @@ b_(s k) >= 0 quad forall s,k in {1, ..., n} \
 r_k in RR quad forall k in {1, ..., n}
 $
 
-On note $p$ la dimension du vecteur binaire $x$. Dans la partie 1 et 2, on avait une dimension $p$ (avec $p$ le nombre de projets), dans la partie 3, on va voir une dimension $p times p$ (avec $p$ le nombre de nœuds dans le graphe). Cette dimension, la fonction objective et les contraintes d'admissibilité décrivent alors entièrement un problème et peut être utilisé pour calculer les quatre critères dans l'incertain complet.
+On note $p$ la dimension du vecteur binaire $x$. Dans la partie 1 et 2, on avait une dimension $p$ (avec $p$ le nombre de projets), dans la partie 3, on va voir une dimension $p times p$ (avec $p$ le nombre de nœuds dans le graphe). Cette dimension, la fonction objective et les contraintes d'admissibilité décrivent alors entièrement un problème et peuvent être utilisées pour calculer les quatre critères dans l'incertain complet.
 
 C'est pourquoi on choisit de réécrire le problème de recherche de plus court chemin dans un graphe de la façon suivante :
 
@@ -661,7 +661,7 @@ Vecteur image $z(x^*) = (-10, -10)$ \
 Valeur optimale: $g(x^*) = -10$ \
 ]
 
-On observe que la valeur optimale a une valeur négative mais on peut simplement prendre son opposé pour obtenir le coût réel du chemin. Ici le critère maxmin nous informe que dans les deux graphes, si on est le plus pessimiste possible sur les scénarios, alors on aura les valeurs obtenues dans le vecteur image comme potentiel action. Dans le pire cas, on sélectionne la plus petite valeur des deux (c'est à dire le plus long chemin) qui correspond à être dans le mauvais scénario. Finalement on remarque que le vecteur est plutôt équilibré, ce qui reflète nos observations de la partie 1.
+On observe que la valeur optimale a une valeur négative mais on peut simplement prendre son opposée pour obtenir le coût réel du chemin. Ici, le critère maxmin nous informe que dans les deux graphes, si on est le plus pessimiste possible sur les scénarios, alors on aura les valeurs obtenues dans le vecteur image comme potentielle action. Dans le pire cas, on sélectionne la plus petite valeur des deux (c'est à dire le plus long chemin) qui correspond à être dans le mauvais scénario. Finalement, on remarque que le vecteur est plutôt équilibré, ce qui reflète nos observations de la partie 1.
 
 
 $
@@ -750,7 +750,7 @@ Valeur optimale: $g(x^*) = 13$ \
 
 Finalement, le critère minOWA regret combine les idées précédentes pour obtenir un critère qui minimise le regret tout en étant pas aussi pessimiste que minmax regret en prenant en compte dans son analyse les scénarios plus optimistes, mais avec un poids plus faible.
 
-Pour le moment, on a utilisé le vecteur de poids $w = (2, 1)$. On s'intéresse désormais à l'évolution de la solution si on choisi d'utiliser un vecteur $w = (k, 1)$ avec $k in {2, 4, 8, 16}$. Tout d'abord on réfléchit de façon théorique à ce à quoi on devrait s'attendre. Dans les critère maxOWA et minOWA regret, les poids correspondent à l'importance qu'on donne à chaque scénario une fois trié du pire au meilleur (ou du meilleur au pire pour les regrets). Dans le cas de deux scénarios, si on a $k=1$, alors cela revient à dire que l'on considère les deux scénarios, le meilleur et le pire, comme aussi important pour la prise de décision. C'est en quelque sorte faire une sorte de moyenne dans notre décision. Mais de façon plus intéressante, si on monte $k$, alors dans le cas de deux scénarios, cela revient à dire qu'on donne une importance de plus en plus grande au pire scénario, quitte à négliger le meilleur. En fait, cela revient à se ramener au critère maxmin et minmax, qui est très pessimiste et ne considère que le pire. On émet donc la conjecture que à mesure que $k$ grandit, maxOWA converge vers maxmin et minOWA regret converge vers minmax regret. C'est à dire que pour un graphe donné $G$, on peut trouver $N$ tel que $forall k > N$, la solution renvoyé par le programme linéaire maxOWA (minOWA regret) avec les poids $(k, 1)$ est exactement la même que la solution du programme linéaire maxmin (minmax regret).
+Pour le moment, on a utilisé le vecteur de poids $w = (2, 1)$. On s'intéresse désormais à l'évolution de la solution si on choisi d'utiliser un vecteur $w = (k, 1)$ avec $k in {2, 4, 8, 16}$. Tout d'abord on réfléchit de façon théorique à ce à quoi on devrait s'attendre. Dans les critère maxOWA et minOWA regret, les poids correspondent à l'importance qu'on donne à chaque scénario une fois trié du pire au meilleur (ou du meilleur au pire pour les regrets). Dans le cas de deux scénarios, si on a $k=1$, alors cela revient à dire que l'on considère les deux scénarios, le meilleur et le pire, comme aussi importants pour la prise de décision. C'est en quelque sorte faire une sorte de moyenne dans notre décision. Mais de façon plus intéressante, si on monte $k$, alors dans le cas de deux scénarios, cela revient à dire qu'on donne une importance de plus en plus grande au pire scénario, quitte à négliger le meilleur. En fait, cela revient à se ramener au critère maxmin et minmax, qui est très pessimiste et ne considère que le pire. On émet donc la conjecture que à mesure que $k$ grandit, maxOWA converge vers maxmin et minOWA regret converge vers minmax regret. C'est à dire que pour un graphe donné $G$, on peut trouver $N$ tel que $forall k > N$, la solution renvoyée par le programme linéaire maxOWA (minOWA regret) avec les poids $(k, 1)$ est exactement la même que la solution du programme linéaire maxmin (minmax regret).
 
 #figure(caption: [Évolution des chemins par k])[
   Graphe de gauche \
@@ -792,7 +792,7 @@ On observe bien en pratique sur nos graphes les résultats attendus théoriqueme
 On s'intéresse finalement à l'évolution des temps de résolution de tous les critères reformulés en fonction du nombre de scénarios ($n={2, 5, 10, ..., 50}$) et du nombre de projets ($p={10, 15, 20, 40, 80, 120, 160, 200, 240}$).
 Pour évaluer systématiquement leurs performances respectives, on génère pour chaque couple (n,p) un ensemble de 50 instances aléatoires.
 
-Pour chaque instance, on doit générer des graphes aléatoires avec une densité entre 30% et 50%. Pour ce faire, on engendre un vecteur contenant l'ensemble arcs $(i, j)$. On mélange au hasard ce vecteur et on tire un nombre au hasard $a$ entre 30% et 50% de la taille de ce vecteur. On peut ensuite prendre les $a$ premiers éléments de ce vecteur pour obtenir nos arcs. On réalise le même procédé, mais sur les sommets pour réaliser le tirage aléatoire de la source et de la destination. Les coûts des arcs dans chaque scénarios sont tirés uniformément dans l'intervalle $[1, 100]$. Les poids sont choisis dans l'intervalle $[0, n]$ puis trié pour pouvoir respecter la conditions de poids décroissants.
+Pour chaque instance, on doit générer des graphes aléatoires avec une densité entre 30% et 50%. Pour ce faire, on engendre un vecteur contenant l'ensemble arcs $(i, j)$. On mélange au hasard ce vecteur et on tire un nombre au hasard $a$ entre 30% et 50% de la taille de ce vecteur. On peut ensuite prendre les $a$ premiers éléments de ce vecteur pour obtenir nos arcs. On réalise le même procédé, mais sur les sommets pour réaliser le tirage aléatoire de la source et de la destination. Les coûts des arcs dans chaque scénarios sont tirés uniformément dans l'intervalle $[1, 100]$. Les poids sont choisis dans l'intervalle $[0, n]$ puis triés pour pouvoir respecter la conditions de poids décroissants.
 
 L'implémentation de ce programme linéaire a été réalisée en Python (voir le fichier `src/q34.py`). La résolution nous fournit les résultats suivants.
 
@@ -836,9 +836,9 @@ L'implémentation de ce programme linéaire a été réalisée en Python (voir l
   #plot-performance-scenario(data-minmax-regret-path)
 ]
 
-Tout d'abord commençons par commenter l'évolution des scénarios pour les critères maxmin et minmax regret. On observe que, comme dans la partie 1, considérer des nouveaux scénarios est peu cher, puisque l'évolution de la complexité suit une courbe linéaire. Comme dans le première partie, cette propriété est intéressante, puisqu'elle nous permet de pouvoir considérer un grand nombre de scénarios à moindre coûts.
+Tout d'abord commençons par commenter l'évolution des scénarios pour les critères maxmin et minmax regret. On observe que, comme dans la partie 1, considérer des nouveaux scénarios est peu cher, puisque l'évolution de la complexité suit une courbe linéaire. Comme dans le première partie, cette propriété est intéressante, puisqu'elle nous permet de pouvoir considérer un grand nombre de scénarios à moindre coût.
 
-Pour l'évolution des scénarios pour les critères maxOWA et minOWA regret, on observe une fois de plus des courbes qui semblent être quadratique. Cela semble être aussi du au fait que le critère requiert un tri, qui suit une complexité quadratique.
+Pour l'évolution des scénarios pour les critères maxOWA et minOWA regret, on observe une fois de plus des courbes qui semblent être quadratiques. Cela semble être aussi du au fait que le critère requiert un tri, qui suit une complexité quadratique.
 
 #figure(caption: [ MaxOWA par scénarios ])[
   #plot-performance-scenario(data-maxowa-path)
@@ -848,9 +848,9 @@ Pour l'évolution des scénarios pour les critères maxOWA et minOWA regret, on 
   #plot-performance-scenario(data-minowa-regret-path)
 ]
 
-Finalement, on s'intéresse à l'évolution de la courbe en fonction du nombre de nœuds pour les quatre critères. On remarque que la courbe à l'air d'être une fois de plus exponentielle.
+Finalement, on s'intéresse à l'évolution de la courbe en fonction du nombre de nœuds pour les quatre critères. On remarque que la courbe a l'air d'être une fois de plus exponentielle.
 
-Il est important de commenter que nous avons fait le choix de tirer jusqu'à des instances de taille $p=240$ parce que après avoir fait des observations jusqu'à $p=50$, la courbe était pratiquement constante. La recherche d'un plus court chemin dans un graphe de taille $p=10$ étant évidement plus simple que dans un graphe de taille $p=50$, on a eu l'intuition que ce plateau était probablement simplement le début d'une courbe exponentielle. C'est pourquoi nous avons pris la décision d'observer sur des plus grandes instances, et qu'on a pu valider le fait que la courbe suit bien une évolution exponentielle.
+Il est important de commenter que nous avons fait le choix de tirer jusqu'à des instances de taille $p=240$ parce qu'après avoir fait des observations jusqu'à $p=50$, la courbe était pratiquement constante. La recherche d'un plus court chemin dans un graphe de taille $p=10$ étant évidement plus simple que dans un graphe de taille $p=50$, on a eu l'intuition que ce plateau était probablement simplement le début d'une courbe exponentielle. C'est pourquoi nous avons pris la décision d'observer sur de plus grandes instances, et qu'on a pu valider le fait que la courbe suit bien une évolution exponentielle.
 
 #figure(caption: [ Maxmin par nœuds ])[
   #plot-performance-project(data-maxmin-path)
@@ -860,7 +860,7 @@ Il est important de commenter que nous avons fait le choix de tirer jusqu'à des
   #plot-performance-project(data-minmax-regret-path)
 ]
 
-Cela étant dit, la recherche de plus court chemin dans un graphe n'est pas NP-complet, on avait justifié dans la partie 1 que cette évolution était exponentielle dû au fait que #smallcaps[SacÀDos] était NP-complet, mais cela ne le justifie plus ici. Il est alors intéressant de se demander si la courbe est effectivement exponentielle ou bien si elle n'est en fait que quadratique et que la taille réduite des tirages nous porte à croire à tort qu'elle l'est. Cela étant dit, si l'on s'intéresse au variables que l'on utilise, alors on remarque que les variables sont binaires. Cela nous renvoie à un résultat de théorie de la complexité, celui que le problème de décision #smallcaps[0-1IntegerProgramming] est NP-complet. Du fait, par le choix du domaine de définition des variables, on a contraint une garantie exponentielle sur l'évolution de la complexité. Il est particulièrement intéressant de se demander si on aurait pu éviter cette complexité en utilisant des variables continues, en introduisant simplement une des variables définies sur $RR^+$ et en ajoutant la contrainte $x_(i j) <= 1$, c'est à dire d'introduire la contrainte du flot de façon explicite. Il faut noter qu'une solution entière aurait alors été possible (si un chemin existe réellement). En effet le théorème d'intégralité sur les flots maximums nous dit que si les capacités sont entières (ce qui est le cas), alors il existe un flot maximum entier. Cette nouvelle opération de benchmarking n'a pas pu être faite pour ce projet, mais on aurait probablement obtenu un résultat différent et intéressant.
+Cela étant dit, la recherche de plus court chemin dans un graphe n'est pas NP-complet. On avait justifié dans la partie 1 que cette évolution était exponentielle dû au fait que #smallcaps[SacÀDos] était NP-complet, mais cela ne le justifie plus le fait que la courbe soit exponentielle ici. Il est alors intéressant de se demander si la courbe est effectivement exponentielle ou bien si elle n'est en fait que quadratique et que la taille réduite des tirages nous porte à croire à tort qu'elle l'est. Cela étant dit, si l'on s'intéresse au variables que l'on utilise, alors on remarque que les variables sont binaires. Cela nous renvoie à un résultat de théorie de la complexité, celui que le problème de décision #smallcaps[0-1IntegerProgramming] est NP-complet. De fait, par le choix du domaine de définition des variables, on a contraint une garantie exponentielle sur l'évolution de la complexité. Il est particulièrement intéressant de se demander si on aurait pu éviter cette complexité en utilisant des variables continues, en introduisant simplement une des variables définies sur $RR^+$ et en ajoutant la contrainte $x_(i j) <= 1$, c'est à dire d'introduire la contrainte du flot de façon explicite. Il faut noter qu'une solution entière aurait alors été possible (si un chemin existe réellement). En effet le théorème d'intégralité sur les flots maximums nous dit que si les capacités sont entières (ce qui est le cas), alors il existe un flot maximum entier. Cette nouvelle opération de benchmarking n'a pas pu être faite pour ce projet, mais on aurait probablement obtenu un résultat différent et intéressant.
 
 #figure(caption: [ MaxOWA par nœuds ])[
   #plot-performance-project(data-maxowa-path)
@@ -870,8 +870,8 @@ Cela étant dit, la recherche de plus court chemin dans un graphe n'est pas NP-c
   #plot-performance-project(data-minowa-regret-path)
 ]
 
-On a pu voir dans ce projet que si un problème peut être modélisé comme un programme linéaire à variables binaires dans un scénario donné, alors on peut le passer à l'incertain complet, dans lequel on ne sait pas quel scénario il faut privilégier. Cette propriété est particulièrement intéressante pour des applications industrielles, on a pu voir  comment le problème théorique du #smallcaps[SacÀDos] peut être perçu comme un problème d'investissement pour une entreprise. Pour le problème des graphes de la partie 3, on peut imaginer une application industrielle de système GPS, avec la prise en compte d'aléas météo ou de ralentissement de la circulation. Sans savoir ce qui va se passer, lorsque les modèles statistiques sont dépassés pour prévoir la probabilité des scénarios, on peut quand même utiliser ces critères pour prendre des décisions bien plus robustes qu'une simple pondération des solutions obtenues dans chaque scénario. On peut aussi imaginer une application du fameux problème de voyageur du commerce, important dans les réseaux télécoms, qui peuvent être alors étendu d'un scénario à un ensemble de scénarios incertains. La décision est alors capable de s'y adapter et de proposer des solutions plus robuste.
+On a pu voir dans ce projet que si un problème peut être modélisé comme un programme linéaire à variables binaires dans un scénario donné, alors on peut le passer à l'incertain complet, dans lequel on ne sait pas quel scénario il faut privilégier. Cette propriété est particulièrement intéressante pour des applications industrielles, on a pu voir  comment le problème théorique du #smallcaps[SacÀDos] peut être perçu comme un problème d'investissement pour une entreprise. Pour le problème des graphes de la partie 3, on peut imaginer une application industrielle de système GPS, avec la prise en compte d'aléas météo ou de ralentissement de la circulation. Sans savoir ce qui va se passer, lorsque les modèles statistiques sont dépassés pour prévoir la probabilité des scénarios, on peut quand même utiliser ces critères pour prendre des décisions bien plus robustes qu'une simple pondération des solutions obtenues dans chaque scénario. On peut aussi imaginer une application du fameux problème de voyageur du commerce, important dans les réseaux télécoms, qui peut être alors étendu d'un scénario à un ensemble de scénarios incertains. La décision est alors capable de s'y adapter et de proposer des solutions plus robuste.
 
-Dans la vie courante, on peut facilement trouver de nombreux exemples de problèmes où les modèles statistiques ne permettent pas une conclusion satisfaisante, comme les élections en politique, les fusions acquisitions d'entreprises ou le résultat d'une décision de justice. Dans ce type d'évènement, qui peuvent avoir un impact très important sur le déroulé d'opérations industrielles, on peut, grâce à ces critères, prendre des décisions bien plus robustes, et en particulier bien plus robustes dans les pire cas.
+Dans la vie courante, on peut facilement trouver de nombreux exemples de problèmes où les modèles statistiques ne permettent pas une conclusion satisfaisante, comme les élections en politique, les fusions acquisitions d'entreprises ou le résultat d'une décision de justice. Dans ce type d'évènements, qui peuvent avoir un impact très important sur le déroulé d'opérations industrielles, on peut, grâce à ces critères, prendre des décisions bien plus robustes, et en particulier bien plus robustes dans les pire cas.
 
 Finalement, on aimerait pouvoir combiner l'aspect robuste de la décision dans l'incertain et de la prémunition face au risque et l'aspect probabiliste. En pratique, on a quand même parfois des informations qui permettent d'orienter notre jugement dans un sens ou dans l'autre. Il serait particulièrement intéressant d'introduire un aspect probabiliste à ces critères, en particulier pour minOWA regret qui est le critère le plus complexe que l'on a vu dans ce projet.
