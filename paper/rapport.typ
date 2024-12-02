@@ -243,7 +243,7 @@ On a introduit, pour représenter ce programme une nouvelle variable binaire $a_
 
 On va maintenant montrer pourquoi $a_k = (a_(1 k), ..., a_(n k))$ de valeur $L_k (z)$ est la solution optimale de notre programme linéaire. Tout d'abord, montrons que $a_k$ est bien une solution réalisable.
 
-$L_k (z)$ est une somme de exactement $k$ $z_i$, ils sont simplement triés par ordre croissant. On peut donc bien avoir $L_k (z) = a_(i k) z_i$. Cela veut simplement dire que $a_(i k) = 1$ si $z_i$ fait parti des $k$ plus petites valeurs de $z$ et $a_(i k) = 0$ sinon. D'où  $sum_(i=1)^n a_(i k) = k$, la solution $a_k$ est bien une résolution réalisable.
+$L_k (z)$ est une somme de exactement $k$ $z_i$, ils sont simplement triés par ordre croissant. On peut donc bien avoir $L_k (z) = a_(i k) z_i$. Cela veut simplement dire que $a_(i k) = 1$ si $z_i$ fait partie des $k$ plus petites valeurs de $z$ et $a_(i k) = 0$ sinon. D'où  $sum_(i=1)^n a_(i k) = k$, la solution $a_k$ est bien une résolution réalisable.
 
 Supposons maintenant, par l'absurde, qu'il existe $a'_k$ une solution optimale, donc de valeur inférieure à $L_k (z)$. On note $I$ l'ensemble des indices $i$ tels que $a'_(i k) = 1$ et $J$ l'ensemble des indices des $k$ plus petites composantes de $z$.
 Si $I eq.not J$, et comme $|I| = |J| = k$, alors il existe $i_1 in I \\ J$ et $i_2 in J \\ I$.
@@ -463,7 +463,7 @@ L'implémentation de ce programme linéaire a été réalisée en Python(voir le
   )
 })
 
-On remarque tout d'abord que le critère maxOWA et minOWA regret sont plus lents en temps d'exécution. Par exemple une résolution $n=50, p=50$ prend $2.1s$ et $3.9s$ contre $0.23s$ et $0.8s$ pour les critère maxmin et minmax regret. Ces critères permettent donc une description plus précise des besoins de l'utilisateur mais cela a un prix en terme de performance. De plus, on remarque que l'évolution de la complexité qui étaient précédemment linéaire ne l'est plus. L'évolution est devenue désormais quadratique, on émet l'hypothèse que cela est dû au fait que le critères de type OWA introduisent un tri. La complexité naïve d'un tri est de l'ordre $O(n^2)$. Cela explique probablement le passage d'une complexité linéaire à une complexité quadratique sur l'évolution du nombre de projet.
+On remarque tout d'abord que le critère maxOWA et minOWA regret sont plus lents en temps d'exécution. Par exemple une résolution $n=50, p=50$ prend $2.1s$ et $3.9s$ contre $0.23s$ et $0.8s$ pour les critère maxmin et minmax regret. Ces critères permettent donc une description plus précise des besoins de l'utilisateur mais cela a un prix en termes de performance. De plus, on remarque que l'évolution de la complexité qui étaient précédemment linéaire ne l'est plus. L'évolution est désormais devenue quadratique. On émet l'hypothèse que cela est dû au fait que le critères de type OWA introduisent un tri. La complexité naïve d'un tri est de l'ordre $O(n^2)$. Cela explique probablement le passage d'une complexité linéaire à une complexité quadratique sur l'évolution du nombre de projet.
 
 #figure(caption: [ MaxOWA par scénarios ])[
   #plot-performance-scenario(data-maxowa-project)
