@@ -609,7 +609,7 @@ $
 $
 min sum_(k=1)^n w'_k (k r_k + sum_(s=1)^n b_(s k)) \
 s.c cases(
-  r_k - b_(s k) >= z_s^* - z_s (x) quad forall s in {1\, ...\, n},
+  r_k + b_(s k) >= z_s^* - z_s (x) quad forall s in {1\, ...\, n},
   x in X
 ) \
 x in {0,1}^p \
@@ -724,7 +724,7 @@ Comme on l'a vu, l'introduction des poids dans maxOWA permet plus de nuance face
 $
 min sum_(k=1)^n w'_k (k r_k + sum_(s=1)^n b_(s k)) \
 s.c cases(
-  r_k - b_(s k) >= z_s^* + sum_(i=0)^n sum_(j=0)^n t_(i j)^s x_(i j) forall s in {1\, ...\, n},
+  r_k + b_(s k) >= z_s^* + sum_(i=0)^n sum_(j=0)^n t_(i j)^s x_(i j) forall s in {1\, ...\, n},
 sum_(i=0)^p x_(s i) = 1,
 sum_(i=0)^p x_(i t) = 1,
 sum_(i=0)^p x_(i v) - x_(v i) = 0 quad forall v eq.not s "et" v eq.not t
