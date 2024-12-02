@@ -220,9 +220,6 @@
     let x-ticks = generate-ticks(x-min, x-max, find-tick-step(x-min, x-max))
     let y-ticks = generate-ticks(y-min, y-max, find-tick-step(y-min, y-max))
 
-    line((0, 0), (1.1, 0), mark: (end: "stealth"))
-    line((0, 0), (0, 1.1), mark: (end: "stealth"))
-
     for x in x-ticks {
       if x <= x-max {
         let x-pos = to-screen(x, x-min, x-max)
@@ -276,6 +273,10 @@
     content((0.5, -0.1), anchor: "north", text(size: 0.6em)[ Scénario ])
 
     content((-0.15, 0.5), anchor: "center", angle: 90deg, text(size: 0.6em)[ Temps d'exécution ])
+
+    line((0, 0), (1.1, 0), mark: (end: "stealth"))
+    line((0, 0), (0, 1.1), mark: (end: "stealth"))
+
   })
 }
 
@@ -317,9 +318,6 @@
 
     let x-ticks = generate-ticks(x-min, x-max, find-tick-step(x-min, x-max))
     let y-ticks = generate-ticks(y-min, y-max, find-tick-step(y-min, y-max))
-
-    line((0, 0), (1.1, 0), mark: (end: "stealth"))
-    line((0, 0), (0, 1.1), mark: (end: "stealth"))
 
     for x in x-ticks {
       if x <= x-max {
@@ -374,5 +372,8 @@
     content((0.5, -0.1), anchor: "north", text(size: 0.6em)[ Scénario ])
 
     content((-0.15, 0.5), anchor: "center", angle: 90deg, text(size: 0.6em)[ Temps d'exécution ])
+
+    line((0, 0), (1.1, 0), mark: (end: "stealth"))
+    line((0, 0), (0, 1.1), mark: (end: "stealth"))
   })
 }
