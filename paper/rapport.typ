@@ -719,7 +719,7 @@ Vecteur image $z(x^*) = (-6, -12)$ \
 Valeur optimale: $g(x^*) = -30$ \
 ]
 
-Comme on l'a vu, l'introduction des poids dans maxOWA permet plus de nuance face au pessimisme de maxmin. Ici on n'anticipe pas le pire scénario uniquement, mais on caractérise l'importance qu'on porte à chaque scénario, du pire au meilleur dans notre décision. L'idée est de se prémunir du risque de façon moins pessimiste que maxmin. Les valeurs optimales ici ne correspondent bien pas non plus à la longueur des chemins, et c'est donc bien la valeur du chemin qui nous intéresse.
+Comme on l'a vu, l'introduction des poids dans maxOWA permet plus de nuance face au pessimisme de maxmin. Ici, on n'anticipe pas le pire scénario uniquement, mais on caractérise l'importance qu'on porte à chaque scénario, du pire au meilleur dans notre décision. L'idée est de se prémunir du risque de façon moins pessimiste que maxmin. Les valeurs optimales ici ne correspondent bien pas non plus à la longueur des chemins, et c'est donc bien la valeur du chemin qui nous intéresse.
 
 $
 min sum_(k=1)^n w'_k (k r_k + sum_(s=1)^n b_(s k)) \
