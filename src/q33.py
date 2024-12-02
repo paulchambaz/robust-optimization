@@ -19,7 +19,10 @@ def preprocess_graph(graph: list[list[int]]) -> None:
 
 
 def objective_function(
-    costs: list[list[list[int]]], x: list[list[int]], scenario: int
+    costs: list[list[list[int]]],
+    x: list[list[int]],
+    scenario: int,
+    p: int,
 ) -> float:
     """
     Computes the negative sum of edge costs for selected path in given scenario
@@ -36,7 +39,7 @@ def objective_function(
 
 
 def is_admissible(
-    prob: pl.pulp.LpProblem, source: int, destination: int, x: list[list[int]]
+    prob: pl.pulp.LpProblem, source: int, destination: int, x: list[list[int]], p: int
 ) -> None:
     """
     Adds flow conservation constraints to ensure valid path selection
@@ -75,9 +78,9 @@ def path_selection(
         for i in range(p)
     ]
 
-    prob += objective_function(costs, x, scenario)
+    prob += objective_function(costs, x, scenario, p)
 
-    is_admissible(prob, source, destination, x)
+    is_admissible(prob, source, destination, x, p)
 
     prob.solve(pl.GUROBI_CMD(msg=0))
 
@@ -114,9 +117,9 @@ def maxmin_path_selection(
 
     prob += alpha
     for scenario in range(n):
-        prob += objective_function(costs, x, scenario) >= alpha
+        prob += objective_function(costs, x, scenario, p) >= alpha
 
-    is_admissible(prob, source, destination, x)
+    is_admissible(prob, source, destination, x, p)
 
     prob.solve(pl.GUROBI_CMD(msg=0))
 
@@ -158,9 +161,9 @@ def minmax_regret_path_selection(
 
     prob += beta
     for scenario in range(n):
-        prob += optimals[scenario] - objective_function(costs, x, scenario) <= beta
+        prob += optimals[scenario] - objective_function(costs, x, scenario, p) <= beta
 
-    is_admissible(prob, source, destination, x)
+    is_admissible(prob, source, destination, x, p)
 
     prob.solve(pl.GUROBI_CMD(msg=0))
 
@@ -212,9 +215,9 @@ def maxowa_path_selection(
 
     for k in range(n):
         for s in range(n):
-            prob += r[k] - b[s][k] <= objective_function(costs, x, s)
+            prob += r[k] - b[s][k] <= objective_function(costs, x, s, p)
 
-    is_admissible(prob, source, destination, x)
+    is_admissible(prob, source, destination, x, p)
 
     prob.solve(pl.GUROBI_CMD(msg=0))
 
@@ -271,9 +274,9 @@ def minowa_regret_path_selection(
 
     for k in range(n):
         for s in range(n):
-            prob += r[k] + b[s][k] >= optimals[s] - objective_function(costs, x, s)
+            prob += r[k] + b[s][k] >= optimals[s] - objective_function(costs, x, s, p)
 
-    is_admissible(prob, source, destination, x)
+    is_admissible(prob, source, destination, x, p)
 
     prob.solve(pl.GUROBI_CMD(msg=0))
 

@@ -1,6 +1,7 @@
 # question 1.4 - paul chambaz & zelie van der meer - 2024
 
 import csv
+import os
 import random
 import time
 
@@ -12,7 +13,13 @@ if __name__ == "__main__":
     ps = [10, 15, 20, 25, 30, 35, 40, 45, 50]
     num_repetitions = 50
 
-    with open("paper/data/q14.csv", "w", newline="") as csvfile:
+    data_dir = "paper/data"
+    data_file = "q14.csv"
+    output_path = (
+        os.path.join(data_dir, data_file) if os.path.exists(data_dir) else data_file
+    )
+
+    with open(output_path, "w", newline="") as csvfile:
         fieldnames = [
             "n_scenarios",
             "n_projects",
