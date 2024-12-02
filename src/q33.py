@@ -178,77 +178,53 @@ def minowa_regret_path_selection(source, destination, costs, n, p, w):
     return status, solution, optimal, optimals
 
 
-costs = [
-    [
-        [0, 4, 5, 0, 0, 0],
-        [0, 0, 2, 1, 2, 7],
-        [0, 0, 0, 5, 2, 0],
-        [0, 0, 0, 0, 0, 3],
-        [0, 0, 0, 0, 0, 5],
-        [0, 0, 0, 0, 0, 0],
+instances = {
+    "left": [
+        [
+            [0, 4, 5, 0, 0, 0],
+            [0, 0, 2, 1, 2, 7],
+            [0, 0, 0, 5, 2, 0],
+            [0, 0, 0, 0, 0, 3],
+            [0, 0, 0, 0, 0, 5],
+            [0, 0, 0, 0, 0, 0],
+        ],
+        [
+            [0, 3, 1, 0, 0, 0],
+            [0, 0, 1, 4, 2, 5],
+            [0, 0, 0, 1, 7, 0],
+            [0, 0, 0, 0, 0, 2],
+            [0, 0, 0, 0, 0, 2],
+            [0, 0, 0, 0, 0, 0],
+        ],
     ],
-    [
-        [0, 3, 1, 0, 0, 0],
-        [0, 0, 1, 4, 2, 5],
-        [0, 0, 0, 1, 7, 0],
-        [0, 0, 0, 0, 0, 2],
-        [0, 0, 0, 0, 0, 2],
-        [0, 0, 0, 0, 0, 0],
+    "right": [
+        [
+            [0, 5, 10, 2, 0, 0, 0],
+            [0, 0, 4, 1, 4, 0, 0],
+            [0, 0, 0, 0, 3, 1, 0],
+            [0, 0, 1, 0, 0, 3, 0],
+            [0, 0, 0, 0, 0, 0, 1],
+            [0, 0, 0, 0, 0, 0, 1],
+            [0, 0, 0, 0, 0, 0, 0],
+        ],
+        [
+            [0, 3, 4, 6, 0, 0, 0],
+            [0, 0, 2, 3, 6, 0, 0],
+            [0, 0, 0, 0, 1, 2, 0],
+            [0, 0, 4, 0, 0, 5, 0],
+            [0, 0, 0, 0, 0, 0, 1],
+            [0, 0, 0, 0, 0, 0, 1],
+            [0, 0, 0, 0, 0, 0, 0],
+        ],
     ],
-]
+}
 
-n = len(costs)
-p = len(costs[0])
-status, solution, optimal = maxmin_path_selection(0, p - 1, costs, n, p)
+for name, costs in instances.items():
+    print(f"\n\n{name}\n\n")
 
-selected_arcs = [
-    (chr(ord("a") + i), chr(ord("a") + j))
-    for j in range(p)
-    for i in range(p)
-    if solution[i][j] == 1
-]
-z = [
-    -sum(costs[s][i][j] * solution[i][j] for j in range(p) for i in range(p))
-    for s in range(n)
-]
-
-print("Left graph")
-print("\nMaxmin")
-print(f"Status: {status}")
-print(f"Vector x*: {solution}")
-print(f"Selected arcs: {selected_arcs}")
-print(f"Vector z(x*) = {tuple(z)}")
-print(f"Optimal value g(x*): {optimal}")
-
-status, solution, optimal, optimals = minmax_regret_path_selection(
-    0, p - 1, costs, n, p
-)
-
-selected_arcs = [
-    (chr(ord("a") + i), chr(ord("a") + j))
-    for j in range(p)
-    for i in range(p)
-    if solution[i][j] == 1
-]
-z = [
-    optimals[s]
-    + sum(costs[s][i][j] * solution[i][j] for j in range(p) for i in range(p))
-    for s in range(n)
-]
-
-print("\nMinmax regret")
-print(f"Status: {status}")
-print(f"Vector x*: {solution}")
-print(f"Selected arcs: {selected_arcs}")
-print(f"Vector z(x*) = {tuple(z)}")
-print(f"Optimal value g(x*): {optimal}")
-print(f"Optimals s* = {tuple(optimals)}")
-
-for k in [2, 4, 8, 16]:
-    w = [k, 1]
-    print(f"\nWeights: {tuple(w)}\n")
-
-    status, solution, optimal = maxowa_path_selection(0, p - 1, costs, n, p, w)
+    n = len(costs)
+    p = len(costs[0])
+    status, solution, optimal = maxmin_path_selection(0, p - 1, costs, n, p)
 
     selected_arcs = [
         (chr(ord("a") + i), chr(ord("a") + j))
@@ -261,15 +237,15 @@ for k in [2, 4, 8, 16]:
         for s in range(n)
     ]
 
-    print("\nMaxowa")
+    print("\nMaxmin")
     print(f"Status: {status}")
     print(f"Vector x*: {solution}")
     print(f"Selected arcs: {selected_arcs}")
     print(f"Vector z(x*) = {tuple(z)}")
     print(f"Optimal value g(x*): {optimal}")
 
-    status, solution, optimal, optimals = minowa_regret_path_selection(
-        0, p - 1, costs, n, p, w
+    status, solution, optimal, optimals = minmax_regret_path_selection(
+        0, p - 1, costs, n, p
     )
 
     selected_arcs = [
@@ -284,10 +260,58 @@ for k in [2, 4, 8, 16]:
         for s in range(n)
     ]
 
-    print("\nMinowa regret")
+    print("\nMinmax regret")
     print(f"Status: {status}")
     print(f"Vector x*: {solution}")
     print(f"Selected arcs: {selected_arcs}")
     print(f"Vector z(x*) = {tuple(z)}")
     print(f"Optimal value g(x*): {optimal}")
     print(f"Optimals s* = {tuple(optimals)}")
+
+    for k in [2, 4, 8, 16]:
+        w = [k, 1]
+        print(f"\nWeights: {tuple(w)}\n")
+
+        status, solution, optimal = maxowa_path_selection(0, p - 1, costs, n, p, w)
+
+        selected_arcs = [
+            (chr(ord("a") + i), chr(ord("a") + j))
+            for j in range(p)
+            for i in range(p)
+            if solution[i][j] == 1
+        ]
+        z = [
+            -sum(costs[s][i][j] * solution[i][j] for j in range(p) for i in range(p))
+            for s in range(n)
+        ]
+
+        print("\nMaxowa")
+        print(f"Status: {status}")
+        print(f"Vector x*: {solution}")
+        print(f"Selected arcs: {selected_arcs}")
+        print(f"Vector z(x*) = {tuple(z)}")
+        print(f"Optimal value g(x*): {optimal}")
+
+        status, solution, optimal, optimals = minowa_regret_path_selection(
+            0, p - 1, costs, n, p, w
+        )
+
+        selected_arcs = [
+            (chr(ord("a") + i), chr(ord("a") + j))
+            for j in range(p)
+            for i in range(p)
+            if solution[i][j] == 1
+        ]
+        z = [
+            optimals[s]
+            + sum(costs[s][i][j] * solution[i][j] for j in range(p) for i in range(p))
+            for s in range(n)
+        ]
+
+        print("\nMinowa regret")
+        print(f"Status: {status}")
+        print(f"Vector x*: {solution}")
+        print(f"Selected arcs: {selected_arcs}")
+        print(f"Vector z(x*) = {tuple(z)}")
+        print(f"Optimal value g(x*): {optimal}")
+        print(f"Optimals s* = {tuple(optimals)}")

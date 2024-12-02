@@ -33,7 +33,7 @@
           university,
           h(1fr),
           [ #context { counter(page).display("1") } ],
-          h(1fr),
+          h(.7fr),
           reference,
       )
     ],
@@ -368,7 +368,7 @@
       let color = plot-colors.at(color-idx)
       let y-pos = legend-start + (i * 0.06)
       circle((1.1, y-pos), radius: 0.01, stroke: none, fill: color)
-      content((1.13, y-pos), text(size: 0.5em)[$p = #scenario$], anchor: "west")
+      content((1.13, y-pos), text(size: 0.5em)[$n = #scenario$], anchor: "west")
     }
 
     content((0.5, -0.1), anchor: "north", text(size: 0.6em)[ Scénario ])
