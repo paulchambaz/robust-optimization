@@ -238,6 +238,9 @@
       }
     }
 
+    line((0, 0), (1.1, 0), mark: (end: "stealth"))
+    line((0, 0), (0, 1.1), mark: (end: "stealth"))
+
  
     for (project-idx, project-medians) in median-values.enumerate() {
       let project = projects.at(project-idx)
@@ -273,9 +276,6 @@
     content((0.5, -0.1), anchor: "north", text(size: 0.6em)[ Scénario ])
 
     content((-0.15, 0.5), anchor: "center", angle: 90deg, text(size: 0.6em)[ Temps d'exécution ])
-
-    line((0, 0), (1.1, 0), mark: (end: "stealth"))
-    line((0, 0), (0, 1.1), mark: (end: "stealth"))
 
   })
 }
@@ -337,6 +337,9 @@
       }
     }
 
+    line((0, 0), (1.1, 0), mark: (end: "stealth"))
+    line((0, 0), (0, 1.1), mark: (end: "stealth"))
+
  
     for (scenario-idx, scenario-medians) in median-values.enumerate() {
       let scenario = scenarios.at(scenario-idx)
@@ -372,8 +375,5 @@
     content((0.5, -0.1), anchor: "north", text(size: 0.6em)[ Scénario ])
 
     content((-0.15, 0.5), anchor: "center", angle: 90deg, text(size: 0.6em)[ Temps d'exécution ])
-
-    line((0, 0), (1.1, 0), mark: (end: "stealth"))
-    line((0, 0), (0, 1.1), mark: (end: "stealth"))
   })
 }
