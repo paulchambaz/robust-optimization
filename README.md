@@ -61,7 +61,7 @@ paper/         # Typst report and figures
 ## Authors
 
 - [Paul Chambaz](https://www.linkedin.com/in/paul-chambaz-17235a158/)
-- Zélie van der Meer
+- [Zélie van der Meer](https://www.linkedin.com/in/z%C3%A9lie-van-der-meer-695ab3293/)
 
 ## License
 
