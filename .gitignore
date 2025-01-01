@@ -2,3 +2,4 @@
 gurobi.log
 */__pycache__/*
 *.zip
+./gurobi.lic

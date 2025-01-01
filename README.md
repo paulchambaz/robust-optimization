@@ -1,127 +1,68 @@
-# Projet MOGPL - Optimisation robuste dans l'incertain total
+# Robust Decision Making Under Uncertainty
 
-Paul Chambaz & Zélie van der Meer - 2024
+A Python implementation of robust optimization algorithms including Maxmin, Minmax Regret and OWA criteria for project selection and path finding under uncertainty (Sorbonne University, MOGPL course project)
 
-# Installation
+## About Robust Optimization
 
-Ce projet requiert une license Gurobi et la libraire python `pulp`.
+This project implements various robust optimization strategies for decision making under complete uncertainty:
 
-```sh
-pip install pulp
-```
+- **Maxmin Criterion**: Optimizes the worst case scenario
+- **Minmax Regret**: Minimizes the maximum regret between the chosen solution and optimal solutions
+- **OWA Criteria**: Uses ordered weighted averaging to balance between optimistic and pessimistic evaluations
 
-## Partie 1
+It addresses two main applications:
 
-### Question 1
+- Project selection under budget constraints
+- Path finding in weighted graphs
 
-Commande à exécuter :
+Both problems are solved using linear programming with binary variables through PuLP and Gurobi.
 
-```sh
-python3 src/q11.py
-```
+## Usage
 
-Affichage dans le terminal
-
-### Question 2
-
-Commande à exécuter :
+Requires Python 3.x and the following packages:
 
 ```sh
-python3 src/q12.py
+pip install pulp  # For linear programming
+# Note: Also requires Gurobi license and installation
 ```
 
-Affichage dans le terminal
-
-### Question 3
-
-Commande à exécuter :
+Run experiments:
 
 ```sh
-python3 src/q13.py
+# Project Selection
+python src/q11.py  # Maxmin
+python src/q12.py  # Minmax regret
+python src/q24.py  # OWA
+
+# Path Finding
+python src/q32.py  # Single scenario
+python src/q33.py  # Multiple criteria
+
+# Performance Analysis
+python src/q14.py  # Project selection
+python src/q26.py  # OWA criteria
+python src/q34.py  # Path finding
 ```
 
-Affichage dans le terminal
-
-### Question 4
-
-Commande à exécuter :
+## Project Structure
 
 ```
-python3 src/q14.py
+src/
+  q11.py       # Maxmin project selection
+  q12.py       # Minmax regret project selection
+  q24.py       # OWA project selection
+  q32.py       # Single scenario path finding
+  q33.py       # Multi-criteria path finding
+  q34.py       # Performance analysis
+paper/         # Typst report and figures
+  data/        # Experimental results
 ```
 
-Résultat dans le fichier `paper/data/q14.csv` directement importé dans le rapport du projet.
+## Authors
 
-## Partie 2
+- [Paul Chambaz](https://www.linkedin.com/in/paul-chambaz-17235a158/)
+- Zélie van der Meer
 
-### Question 2
+## License
 
-Commande à exécuter :
-
-```sh
-python3 src/q22.py
-```
-
-Affichage dans le terminal
-
-### Question 4
-
-Commande à exécuter :
-
-```sh
-python3 src/q24.py
-```
-
-Affichage dans le terminal
-
-### Question 5
-
-Commande à exécuter :
-
-```sh
-python3 src/q25.py
-```
-
-Affichage dans le terminal
-
-### Question 6
-
-Commande à exécuter :
-
-```sh
-python3 src/q26.py
-```
-
-Résultat dans le fichier `paper/data/q26.csv` directement importé dans le rapport du projet.
-
-## Partie 3
-
-### Question 2
-
-Commande à exécuter :
-
-```sh
-python3 src/q32.py
-```
-
-Affichage dans le terminal
-
-### Question 3
-
-Commande à exécuter :
-
-```sh
-python3 src/q33.py
-```
-
-Affichage dans le terminal
-
-### Question 4
-
-Commande à exécuter :
-
-```sh
-python3 src/q34.py
-```
-
-Résultat dans le fichier `paper/data/q34.csv` directement importé dans le rapport du projet.
+This project is licensed under the GNU General Public License v3.0 - see the LICENSE file for details.
